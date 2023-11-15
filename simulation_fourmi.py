@@ -4,24 +4,33 @@ m = 0
 nourriture = 500
 vitesseActuelle = 1000
 
-class fourmi:
+class Fourmi:
     def __init__(self,stade='oeuf'):
         if stade == 'oeuf':
-            self.stade = 'oeuf'
+            self.__stade = 'oeuf'
             self.age = 0
         elif stade == 'larve':
-            self.stade = 'larve'
+            self.__stade = 'larve'
             self.age = 10
         elif stade == 'adulte':
-            self.stade = 'adulte'
+            self.__stade = 'adulte'
             self.age = 20
         else:
             print("Stade non reconnu, oeuf par défaut")
-            self.stade = 'oeuf'
+            self.__stade = 'oeuf'
             self.age = 0
     
-    def __str__(self):
-        return f'Stade : {self.stade}, age : {self.age}'
+    @property
+    def stade(self):
+        return self.__stade
+    
+    @stade.setter
+    def stade(self,nouvStade):
+        liste = ['oeuf','larve','adulte','mort']
+        if liste.index(nouvStade) > liste.index(self.__stade):
+            self.__stade = nouvStade
+        else:
+            return 'Impossible de revenir a un stade précédent'
     
     def jour(self):
         global nourriture
@@ -29,43 +38,36 @@ class fourmi:
         if self.stade == 'oeuf':
             self.age += 1
             if self.age == 10:
-                self.stade = 'larve'
+                self.__stade = 'larve'
             
-        elif self.stade == 'larve':
+        elif self.__stade == 'larve':
             self.age += 1
             if nourriture > 0:
                 nourriture -= 1
             else:
-                self.stade = 'mort'
+                self.__stade = 'mort'
             if self.age == 20:
-                self.stade = 'adulte'
+                self.__stade = 'adulte'
             
-        elif self.stade == 'adulte':
+        elif self.__stade == 'adulte':
             self.age += 1
             if nourriture > 0:
                 nourriture -= 1
             else:
-                self.stade = 'mort'
-
-class reine:
-    def __init__(self):
-        self.age = 0
-        self.stade = 'vivant'
+                self.__stade = 'mort'
     
     def __str__(self):
-        return f'Age : {self.age}'
-    
-    def jour(self):
-        global nourriture
-        
-        if nourriture > 0:
-            nourriture -= 1
-            self.age += 1
-            return fourmi('oeuf')
-        else:
-            self.stade = 'mort'
+        return f'Stade : {self.stade}, age : {self.age}'
 
-reineColonie = reine()
+
+class Reine(Fourmi):
+    def __init__(self,stade='adulte'):
+        super().__init__(stade)
+    
+    def pond(self):
+        return Fourmi('oeuf')
+
+reineColonie = Reine()
 fourmisColonie = []
 
 def temps(nombreMinutes):
@@ -110,8 +112,9 @@ def update_fourmis():
             nbFourmis += 1
         else:
             fourmisColonie.pop(fourmisColonie.index(fourm))
+    reineColonie.jour()
     if nourriture > 0:
-        nouvelleFourmi = reineColonie.jour()
+        nouvelleFourmi = reineColonie.pond()
         fourmisColonie.append(nouvelleFourmi)
         nbOeufs += 1
     else:
@@ -153,7 +156,7 @@ vertClair = "#DDE5B6"
 vert = "#ADC178"
 brun = "#A98467"
 brunFonce = "#6C584C"
-rouge = "#FF0000"
+rouge = "#BB0000"
 
 window = Tk()
 
