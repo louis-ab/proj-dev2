@@ -57,8 +57,9 @@ class Colonie:
         if self.nourriture > 0:
             self.reine.jour(1)
             self.nourriture -= 1
-            nouvelleFourmi = self.reine.pond()
-            self.listeDesFourmis.append(nouvelleFourmi)
+            nouvellesFourmis = self.reine.pond()
+            for nouvelleFourmi in nouvellesFourmis:
+                self.listeDesFourmis.append(nouvelleFourmi)
             self.oeufs += 1
         else:
             self.reine.jour(0)
@@ -129,7 +130,9 @@ class Reine(Fourmi):
         super().__init__(stade)
 
     def pond(self):
-        return Fourmi('oeuf')
+        oeufMin = 0
+        oeufMax = 3
+        return [Fourmi('oeuf') for pondu in range(random.randint(oeufMin, oeufMax))]
 
 class Temps:
     def __init__(self, minutes=0, vitesse=1000):
@@ -204,11 +207,10 @@ def vitesseTreAccelere():
 
 def evenementsAleatoires():
     textEvenements = "Rien de particulier ne s'est passé hier"
+    message = textEvenements
     if notreColonie.tailleColonie > 10:
         evenementActuel = random.choices(notreColonie.listeEvenementsAleatoire, weights=notreColonie.poidsEvenementsAleatoire, k=1)[0]
-        if evenementActuel[0] == 'rienNeSePasse':
-            print(textEvenements)
-        else:
+        if evenementActuel[0] != 'rienNeSePasse':
             minMorts = evenementActuel[1]
             maxMorts = evenementActuel[2]
 
@@ -227,13 +229,18 @@ def evenementsAleatoires():
 
             if evenementActuel[0] == 'fourmisPerdu':
                 if nbrDeMort == 1:
-                    print("1 fourmi s'est perdue dans la nature")
+                    message = "1 fourmi s'est perdue dans la nature"
                 else:
-                    print(str(nbrDeMort) + " fourmis se sont perdues dans la nature")
+                    message = str(nbrDeMort) + " fourmis se sont perdues dans la nature"
             elif nbrDeMort == 0:
-                print("Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmi")
+                message = "Il y a eu une " + evenementActuel[0] + " qui n'a pas tuée de fourmi"
             else:
-                print("Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmis")
+                message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmi"
+    
+    message = "Les événements : \n" + message
+    if notreColonie.nourriture == 0:
+        message += "\nIl n'y a plus de nourriture !"
+    evenementsDeLaJournee.config(text=message)
 
 def nourritureRapporter():
     if notreColonie.tailleColonie >= 1:
@@ -278,7 +285,7 @@ fourmisEcran = Label(window, text="Fourmis : " + str(notreColonie.tailleColonie)
 nourritureEcran = Label(window, text="Nourriture : " + str(notreColonie.nourriture), font="georgia 17 bold", bg=brun)
 jourEcran = Label(window, text="Jour 0", font="georgia 17 bold", bg=brunFonce)
 heureEcran = Label(window, text='00:00', font="georgia 17 bold", bg=brunFonce)
-evenementsDeLaJournee = Label(window, text="Les événements: \n", font="georgia 17 bold", bg=brunFonce)
+evenementsDeLaJournee = Label(window, text="Les événements : \n", font="georgia 17 bold", bg=brunFonce)
 
 # les boutons pour le temps
 vitesseNormal_bouton = Button(window, text='Vitesse normale', command=vitesseNormal, font="georgia 17 bold")
@@ -310,4 +317,4 @@ jourSuivant_bouton.grid(column=0, row=10, sticky='nsew', pady=1)
 
 
 window.after(notreColonie.vitesseTemps, updateTemps())
-window.mainloop()
+window.mainloop() 
