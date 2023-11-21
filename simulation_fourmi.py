@@ -63,6 +63,7 @@ class Colonie:
         else:
             self.reine.jour(0)
 
+        nourritureRapporter()
         evenementsAleatoires()
     
     def stats(self):
@@ -234,6 +235,13 @@ def evenementsAleatoires():
             else:
                 print("Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmis")
 
+def nourritureRapporter():
+    if notreColonie.tailleColonie >= 1:
+        for fourmi in notreColonie.listeDesFourmis:
+            if fourmi.stade == 'adulte':
+                notreColonie.nourriture += 1
+        if notreColonie.reine.stade == 'mort':
+            notreColonie.nourriture = 0
 
 temps = Temps(0)
 
