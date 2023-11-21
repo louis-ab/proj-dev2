@@ -1,6 +1,8 @@
 from tkinter import *
 import random
+from PIL import Image, ImageTk
 
+CheminsImages = ['./1.jpeg','./2.jpeg','3.jpeg','4.jpeg']
 m = 0
 
 
@@ -190,6 +192,15 @@ def updateFourmis():
     if nourriture == 0:
         nourritureEcran.config(bg=rouge)
     
+    if nbFourmis < 5:
+        imageEcran.config(image=images[0])
+    elif nbFourmis < 10:
+        imageEcran.config(image=images[1])
+    elif nbFourmis < 15:
+        imageEcran.config(image=images[2])
+    else:
+        imageEcran.config(image=images[3])
+    
     oeufsEcran.config(text="Œufs : " + str(nbOeufs))
     larvesEcran.config(text="Larves : " + str(nbLarves))
     fourmisEcran.config(text="Fourmis : " + str(nbFourmis))
@@ -234,8 +245,10 @@ def evenementsAleatoires():
                     message = str(nbrDeMort) + " fourmis se sont perdues dans la nature"
             elif nbrDeMort == 0:
                 message = "Il y a eu une " + evenementActuel[0] + " qui n'a pas tuée de fourmi"
-            else:
+            elif nbrDeMort == 1:
                 message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmi"
+            else:
+                message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmis"
     
     message = "Les événements : \n" + message
     if notreColonie.nourriture == 0:
@@ -274,9 +287,16 @@ rouge = "#BB0000"
 window = Tk()
 
 window.title("La colonie de fourmis")
-window.geometry("720x400")
-window.minsize(800, 500)
+window.geometry("1600x900")
+window.minsize(1600, 900)
 window.config(background=jaune)
+
+images = []
+for i in range(4):
+    im = Image.open(CheminsImages[i]).resize((900,900))
+    images.append(ImageTk.PhotoImage(im))
+
+
 
 reineEcran = Label(window, text="Reine : 1", font="georgia 17 bold", bg=brun)
 oeufsEcran = Label(window, text="Œufs : " + str(notreColonie.oeufs), font="georgia 17 bold", bg=brun)
@@ -292,6 +312,9 @@ vitesseNormal_bouton = Button(window, text='Vitesse normale', command=vitesseNor
 vitesseAccelere_bouton = Button(window, text='Vitesse accélérée', command=vitesseAccelere, font="georgia 17 bold")
 vitesseTresAccelere_bouton = Button(window, text='Vitesse très accélérée', command=vitesseTreAccelere, font="georgia 17 bold")
 jourSuivant_bouton = Button(window, text='Jour suivant', command=temps.jourSuivant, font="georgia 17 bold")
+
+# l'image
+imageEcran = Label(window, image=images[0])
 
 for i in range(12):
     window.columnconfigure(i, weight=1)
@@ -313,6 +336,9 @@ vitesseNormal_bouton.grid(column=0, row=7, sticky='nsew', pady=1)
 vitesseAccelere_bouton.grid(column=0, row=8, sticky='nsew', pady=1)
 vitesseTresAccelere_bouton.grid(column=0, row=9, sticky='nsew', pady=1)
 jourSuivant_bouton.grid(column=0, row=10, sticky='nsew', pady=1)
+
+# l'image
+imageEcran.grid(column=1, row=0, rowspan=100, sticky='nsew', pady=1)
 
 
 
