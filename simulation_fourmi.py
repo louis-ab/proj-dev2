@@ -2,12 +2,12 @@ from tkinter import *
 import random
 from PIL import Image, ImageTk
 
-CheminsImages = ['./1.jpeg','./2.jpeg','3.jpeg','4.jpeg']
+CheminsImages = ['Photos/1.jpeg', 'Photos/2.jpeg', 'Photos/3.jpeg', 'Photos/4.jpeg']
 m = 0
 
 
 class Colonie:
-    def __init__(self,nourriture, vitesseTemps = 1000, listeDesFourmis = [], tailleColonie = 0, oeufs = 0, larves = 0):
+    def __init__(self, nourriture, vitesseTemps=1000, listeDesFourmis=[], tailleColonie=0, oeufs=0, larves=0):
         self.nourriture = nourriture
         self.vitesseTemps = vitesseTemps
         self.reine = Reine()
@@ -33,10 +33,10 @@ class Colonie:
                                          ("fourmisPerdu", 1, 4),
                                          ("attaque d'araignée", 10, 25),
                                          ("attaque d'humain", 1, 50),
-                                         ("attaque d'oiseau", 50,100),
+                                         ("attaque d'oiseau", 50, 100),
                                          ("attaque de lezard", 100, 150)
-                                        ]
-        self.poidsEvenementsAleatoire = [15, 5, 10, 3, 3, 1, 1]
+                                         ]
+        self.poidsEvenementsAleatoire = [20, 5, 10, 2, 1, 1, 1]
 
     def jour(self):
         self.tailleColonie = 0
@@ -68,7 +68,9 @@ class Colonie:
 
         nourritureRapporter()
         evenementsAleatoires()
-    
+        if self.reine.stade == 'mort':
+            self.reine = Reine()
+
     def stats(self):
         return (self.reine.stade != 'mort', self.tailleColonie, self.oeufs, self.larves, self.nourriture)
 
@@ -88,7 +90,7 @@ class Fourmi:
             print("Stade non reconnu, oeuf par défaut")
             self.__stade = 'oeuf'
             self.age = 0
-        self.ageMax = random.randint(99,110)
+        self.ageMax = random.randint(300, 310)
 
     @property
     def stade(self):
@@ -102,7 +104,7 @@ class Fourmi:
         else:
             return 'Impossible de revenir a un stade précédent'
 
-    def jour(self,nourriture):
+    def jour(self, nourriture):
 
         if self.stade == 'oeuf':
             self.age += 1
@@ -130,17 +132,24 @@ class Fourmi:
 class Reine(Fourmi):
     def __init__(self, stade='adulte'):
         super().__init__(stade)
+        self.ageMax = random.randint(600, 610)
+
 
     def pond(self):
-        oeufMin = 0
-        oeufMax = 3
+        if notreColonie.tailleColonie < 1000 and notreColonie.tailleColonie != 0:
+            oeufMin = 10
+            oeufMax = 30
+        else:
+            oeufMin = 0
+            oeufMax = 4
         return [Fourmi('oeuf') for pondu in range(random.randint(oeufMin, oeufMax))]
+
 
 class Temps:
     def __init__(self, minutes=0, vitesse=1000):
         self.minutes = minutes
         self.__vitesse = vitesse
-    
+
     def affichage(self):
         minute = self.minutes % 60
         if minute < 10:
@@ -154,22 +163,22 @@ class Temps:
 
         heure = str(hour) + ':' + str(minute)
         return ('Jour ' + str(day), heure)
-    
+
     def update(self):
         self.minutes += 1
         if self.minutes % 1440 == 0:
             updateFourmis()
         return self.affichage()
-    
+
     def jourSuivant(self):
-        self.minutes += 1440 - self.minutes%1440
+        self.minutes += 1440 - self.minutes % 1440
         updateFourmis()
         return self.affichage()
-    
+
     @property
     def vitesse(self):
         return self.__vitesse
-    
+
     @vitesse.setter
     def vitesse(self, value):
         self.__vitesse = max(value, 1)
@@ -186,12 +195,12 @@ def updateTemps():
 def updateFourmis():
     notreColonie.jour()
     reine, nbFourmis, nbOeufs, nbLarves, nourriture = notreColonie.stats()
-    
+
     if reine == 0:
         reineEcran.config(text="Reine : 0")
     if nourriture == 0:
         nourritureEcran.config(bg=rouge)
-    
+
     if nbFourmis < 5:
         imageEcran.config(image=images[0])
     elif nbFourmis < 10:
@@ -200,7 +209,7 @@ def updateFourmis():
         imageEcran.config(image=images[2])
     else:
         imageEcran.config(image=images[3])
-    
+
     oeufsEcran.config(text="Œufs : " + str(nbOeufs))
     larvesEcran.config(text="Larves : " + str(nbLarves))
     fourmisEcran.config(text="Fourmis : " + str(nbFourmis))
@@ -210,17 +219,21 @@ def updateFourmis():
 def vitesseNormal():
     temps.vitesse = 1000
 
+
 def vitesseAccelere():
     temps.vitesse = 100
+
 
 def vitesseTreAccelere():
     temps.vitesse = 10
 
+
 def evenementsAleatoires():
     textEvenements = "Rien de particulier ne s'est passé hier"
     message = textEvenements
-    if notreColonie.tailleColonie > 10:
-        evenementActuel = random.choices(notreColonie.listeEvenementsAleatoire, weights=notreColonie.poidsEvenementsAleatoire, k=1)[0]
+    if notreColonie.tailleColonie > 1000:
+        evenementActuel = \
+        random.choices(notreColonie.listeEvenementsAleatoire, weights=notreColonie.poidsEvenementsAleatoire, k=1)[0]
         if evenementActuel[0] != 'rienNeSePasse':
             minMorts = evenementActuel[1]
             maxMorts = evenementActuel[2]
@@ -249,25 +262,25 @@ def evenementsAleatoires():
                 message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmi"
             else:
                 message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmis"
-    
+
+
     message = "Les événements : \n" + message
     if notreColonie.nourriture == 0:
         message += "\nIl n'y a plus de nourriture !"
     evenementsDeLaJournee.config(text=message)
 
+
 def nourritureRapporter():
     if notreColonie.tailleColonie >= 1:
         for fourmi in notreColonie.listeDesFourmis:
             if fourmi.stade == 'adulte':
-                notreColonie.nourriture += 1
-        if notreColonie.reine.stade == 'mort':
-            notreColonie.nourriture = 0
+                notreColonie.nourriture += random.randint(1,2)
+
 
 temps = Temps(0)
 
-#création de la fourmilière
+# création de la fourmilière
 notreColonie = Colonie(500)
-
 
 ##########################
 ##########################
@@ -293,10 +306,8 @@ window.config(background=jaune)
 
 images = []
 for i in range(4):
-    im = Image.open(CheminsImages[i]).resize((900,900))
+    im = Image.open(CheminsImages[i]).resize((900, 900))
     images.append(ImageTk.PhotoImage(im))
-
-
 
 reineEcran = Label(window, text="Reine : 1", font="georgia 17 bold", bg=brun)
 oeufsEcran = Label(window, text="Œufs : " + str(notreColonie.oeufs), font="georgia 17 bold", bg=brun)
@@ -310,7 +321,8 @@ evenementsDeLaJournee = Label(window, text="Les événements : \n", font="georgi
 # les boutons pour le temps
 vitesseNormal_bouton = Button(window, text='Vitesse normale', command=vitesseNormal, font="georgia 17 bold")
 vitesseAccelere_bouton = Button(window, text='Vitesse accélérée', command=vitesseAccelere, font="georgia 17 bold")
-vitesseTresAccelere_bouton = Button(window, text='Vitesse très accélérée', command=vitesseTreAccelere, font="georgia 17 bold")
+vitesseTresAccelere_bouton = Button(window, text='Vitesse très accélérée', command=vitesseTreAccelere,
+                                    font="georgia 17 bold")
 jourSuivant_bouton = Button(window, text='Jour suivant', command=temps.jourSuivant, font="georgia 17 bold")
 
 # l'image
@@ -340,7 +352,5 @@ jourSuivant_bouton.grid(column=0, row=10, sticky='nsew', pady=1)
 # l'image
 imageEcran.grid(column=1, row=0, rowspan=100, sticky='nsew', pady=1)
 
-
-
 window.after(notreColonie.vitesseTemps, updateTemps())
-window.mainloop() 
+window.mainloop()
