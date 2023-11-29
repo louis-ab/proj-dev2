@@ -2,7 +2,7 @@ from tkinter import *
 import random
 from PIL import Image, ImageTk
 
-CheminsImages = ['Photos/1.jpeg', 'Photos/2.jpeg', 'Photos/3.jpeg', 'Photos/4.jpeg']
+CheminsImages = ['./1.jpeg', './2.jpeg', './3.jpeg', './4.jpeg']
 m = 0
 
 
@@ -66,6 +66,7 @@ class Colonie:
         else:
             self.reine.jour(0)
 
+        updateNaissanceDeces()
         nourritureRapporter()
         evenementsAleatoires()
         if self.reine.stade == 'mort':
@@ -276,6 +277,17 @@ def nourritureRapporter():
             if fourmi.stade == 'adulte':
                 notreColonie.nourriture += random.randint(1,2)
 
+def updateNaissanceDeces():
+    textNul = "Il y a eu aucune naissance et aucune mort naturel aujourd'hui"
+    nbrMort = 0
+    nbrNaissance = notreColonie.oeufs
+    if Fourmi.stade == 'mort':
+        nbrMort += 1
+        print(f"Il y a eu {nbrNaissance} naissance et {nbrMort} morts naturel aujourd'hui")
+    elif nbrMort == 0:
+        print(f"Il y a eu {nbrNaissance} naissance et aucune mort naturel aujourd'hui")
+    else:
+        print(textNul)
 
 temps = Temps(0)
 
