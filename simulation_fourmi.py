@@ -7,14 +7,15 @@ m = 0
 
 
 class Colonie:
-    def __init__(self, nourriture, vitesseTemps=1000, listeDesFourmis=[], tailleColonie=0, oeufs=0, larves=0):
+    def __init__(self, nourriture, listeDesFourmis=[], tailleColonie=0, oeufs=0, larves=0):
         self.nourriture = nourriture
-        self.vitesseTemps = vitesseTemps
         self.reine = Reine()
         self.listeDesFourmis = listeDesFourmis
         self.tailleColonie = 0
         self.oeufs = 0
         self.larves = 0
+        self.naissances = 0
+        self.morts = 0
         for fourm in listeDesFourmis:
             if fourm.stade == 'oeuf':
                 self.oeufs += 1
@@ -42,6 +43,7 @@ class Colonie:
         self.tailleColonie = 0
         self.oeufs = 0
         self.larves = 0
+        self.morts = 0
         for fourm in self.listeDesFourmis:
             if (fourm.stade == 'larve' or fourm.stade == 'adulte') and self.nourriture > 0:
                 fourm.jour(1)
@@ -55,6 +57,7 @@ class Colonie:
             elif fourm.stade == 'adulte':
                 self.tailleColonie += 1
             elif fourm.stade == 'mort':
+                self.morts += 1
                 self.listeDesFourmis.pop(self.listeDesFourmis.index(fourm))
         if self.nourriture > 0:
             self.reine.jour(1)
@@ -62,11 +65,13 @@ class Colonie:
             nouvellesFourmis = self.reine.pond()
             for nouvelleFourmi in nouvellesFourmis:
                 self.listeDesFourmis.append(nouvelleFourmi)
+            self.naissances = len(nouvellesFourmis)
             self.oeufs += 1
         else:
             self.reine.jour(0)
-
-        updateNaissanceDeces()
+            self.naissances = 0
+        
+        updateNaissanceDeces(self)
         nourritureRapporter()
         evenementsAleatoires()
         if self.reine.stade == 'mort':
@@ -202,11 +207,11 @@ def updateFourmis():
     if nourriture == 0:
         nourritureEcran.config(bg=rouge)
 
-    if nbFourmis < 5:
+    if nbFourmis < 30:
         imageEcran.config(image=images[0])
-    elif nbFourmis < 10:
+    elif nbFourmis < 100:
         imageEcran.config(image=images[1])
-    elif nbFourmis < 15:
+    elif nbFourmis < 400:
         imageEcran.config(image=images[2])
     else:
         imageEcran.config(image=images[3])
@@ -277,22 +282,36 @@ def nourritureRapporter():
             if fourmi.stade == 'adulte':
                 notreColonie.nourriture += random.randint(1,2)
 
-def updateNaissanceDeces():
-    textNul = "Il y a eu aucune naissance et aucune mort naturel aujourd'hui"
-    nbrMort = 0
-    nbrNaissance = notreColonie.oeufs
-    if Fourmi.stade == 'mort':
-        nbrMort += 1
-        print(f"Il y a eu {nbrNaissance} naissance et {nbrMort} morts naturel aujourd'hui")
+def updateNaissanceDeces(colonie):
+    textNul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
+    nbrMort = colonie.morts
+    nbrNaissance = colonie.naissances
+    if nbrMort > 0 and nbrNaissance > 0:
+        text = f"Il y a eu {nbrNaissance} naissance(s)\n et {nbrMort} morts naturelle(s) aujourd'hui"
+    elif nbrNaissance == 0:
+        text = f"Il n'y a eu aucune naissance\n et {nbrMort} morts naturelle(s) aujourd'hui"
     elif nbrMort == 0:
-        print(f"Il y a eu {nbrNaissance} naissance et aucune mort naturel aujourd'hui")
+        text = f"Il y a eu {nbrNaissance} naissance(s)\n et aucune mort naturelle aujourd'hui"
     else:
-        print(textNul)
+        text = textNul
+    naissancesMortsDeLaJournee.config(text=text)
+
+def demarre():
+    global notreColonie, temps
+    
+    nourritureDebut = nourritureTexte.get("1.0", "end-1c")
+    fourmiDebut = fourmiTexte.get("1.0", "end-1c")
+    
+    nourritureTitre.destroy()
+    fourmiTitre.destroy()
+    nourritureTexte.destroy()
+    fourmiTexte.destroy()
+    commence_bouton.destroy()
+    
+    notreColonie = Colonie(nourriture=int(nourritureDebut), tailleColonie=int(fourmiDebut))
+    updateFourmis()
 
 temps = Temps(0)
-
-# création de la fourmilière
-notreColonie = Colonie(500)
 
 ##########################
 ##########################
@@ -322,13 +341,14 @@ for i in range(4):
     images.append(ImageTk.PhotoImage(im))
 
 reineEcran = Label(window, text="Reine : 1", font="georgia 17 bold", bg=brun)
-oeufsEcran = Label(window, text="Œufs : " + str(notreColonie.oeufs), font="georgia 17 bold", bg=brun)
-larvesEcran = Label(window, text="Larves : " + str(notreColonie.larves), font="georgia 17 bold", bg=brun)
-fourmisEcran = Label(window, text="Fourmis : " + str(notreColonie.tailleColonie), font="georgia 17 bold", bg=brun)
-nourritureEcran = Label(window, text="Nourriture : " + str(notreColonie.nourriture), font="georgia 17 bold", bg=brun)
+oeufsEcran = Label(window, text="Œufs : 0", font="georgia 17 bold", bg=brun)
+larvesEcran = Label(window, text="Larves : 0", font="georgia 17 bold", bg=brun)
+fourmisEcran = Label(window, text="Fourmis : ?", font="georgia 17 bold", bg=brun)
+nourritureEcran = Label(window, text="Nourriture : ?", font="georgia 17 bold", bg=brun)
 jourEcran = Label(window, text="Jour 0", font="georgia 17 bold", bg=brunFonce)
 heureEcran = Label(window, text='00:00', font="georgia 17 bold", bg=brunFonce)
 evenementsDeLaJournee = Label(window, text="Les événements : \n", font="georgia 17 bold", bg=brunFonce)
+naissancesMortsDeLaJournee = Label(window, text="Naissances et Morts", font="georgia 17 bold", bg=brunFonce)
 
 # les boutons pour le temps
 vitesseNormal_bouton = Button(window, text='Vitesse normale', command=vitesseNormal, font="georgia 17 bold")
@@ -340,11 +360,11 @@ jourSuivant_bouton = Button(window, text='Jour suivant', command=temps.jourSuiva
 # l'image
 imageEcran = Label(window, image=images[0])
 
-for i in range(12):
+for i in range(13):
     window.columnconfigure(i, weight=1)
     window.rowconfigure(i, weight=1)
-window.columnconfigure(12, weight=1)
-window.rowconfigure(12, weight=20)
+window.columnconfigure(13, weight=1)
+window.rowconfigure(13, weight=20)
 
 jourEcran.grid(column=0, row=0, sticky='nsew', pady=1)
 heureEcran.grid(column=0, row=1, sticky='nsew', pady=1)
@@ -354,6 +374,7 @@ larvesEcran.grid(column=0, row=4, sticky='nsew', pady=1)
 fourmisEcran.grid(column=0, row=5, sticky='nsew', pady=1)
 nourritureEcran.grid(column=0, row=6, sticky='nsew', pady=1)
 evenementsDeLaJournee.grid(column=0, row=11, sticky='nsew', pady=1)
+naissancesMortsDeLaJournee.grid(column=0, row=12, sticky='nsew', pady=1)
 
 # les boutons pour le temps
 vitesseNormal_bouton.grid(column=0, row=7, sticky='nsew', pady=1)
@@ -364,5 +385,18 @@ jourSuivant_bouton.grid(column=0, row=10, sticky='nsew', pady=1)
 # l'image
 imageEcran.grid(column=1, row=0, rowspan=100, sticky='nsew', pady=1)
 
-window.after(notreColonie.vitesseTemps, updateTemps())
+# Écran de démarage
+nourritureTitre = Label(window, text="Nourriture :", font="georgia 17 bold", bg=brun)
+fourmiTitre = Label(window, text="Fourmis :", font="georgia 17 bold", bg=brun)
+nourritureTexte = Text(window, font="georgia 17 bold", bg=vertClair)
+fourmiTexte = Text(window, font="georgia 17 bold", bg=vertClair)
+commence_bouton = Button(window, text="Démarrer", command=demarre, font="georgia 17 bold")
+
+nourritureTitre.place(x=450, y=150, width=200, height=50)
+fourmiTitre.place(x=850, y=150, width=200, height=50)
+nourritureTexte.place(x=450, y=200, width=200, height=50)
+fourmiTexte.place(x=850, y=200, width=200, height=50)
+commence_bouton.place(x=650, y=300, width=200, height=50)
+
+updateTemps()
 window.mainloop()
