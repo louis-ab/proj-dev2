@@ -108,8 +108,8 @@ def update_fourmis():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('nourriture', type = int)
-    parser.add_argument('vitesse', type = int)
+    parser.add_argument('-n','--nourriture', type = int, help='quantité de nourriture initiale', default=500)
+    parser.add_argument('-v','--vitesse', type = int, help='vitesse de la simulation, en minute par seconde', default=100)
     args = parser.parse_args()
     
     nourriture = args.nourriture
@@ -134,7 +134,4 @@ if __name__ == "__main__":
         sleep(1)
         for minute in range(vitesse):
             tempsAffichage = update_temps()
-        print(f"{tempsAffichage} | Reine : {reineVivante} | Œufs : {nbOeufs} | Larves : {nbLarves} | Fourmis : {nbFourmis} | Nourriture : {nourriture}")
-
-
-
+        print(f"{tempsAffichage} | Reine : {reineVivante} | Œufs : {nbOeufs} | Larves : {nbLarves} | Fourmis : {nbFourmis} | Nourriture : {nourriture}") 
