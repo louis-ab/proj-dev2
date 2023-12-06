@@ -1,15 +1,18 @@
 from tkinter import *
 import random
 from PIL import Image, ImageTk
+import json
 
 CheminsImages = ['./1.jpeg', './2.jpeg', './3.jpeg', './4.jpeg']
-m = 0
 
 
 class Colonie:
-    def __init__(self, nourriture, listeDesFourmis=[], tailleColonie=0, oeufs=0, larves=0):
+    def __init__(self, nourriture, reine = -1, listeDesFourmis=[], tailleColonie=0, oeufs=0, larves=0):
         self.nourriture = nourriture
-        self.reine = Reine()
+        if reine == -1:
+            self.reine = Reine()
+        else:
+            self.reine = reine
         self.listeDesFourmis = listeDesFourmis
         self.tailleColonie = 0
         self.oeufs = 0
@@ -82,7 +85,7 @@ class Colonie:
 
 
 class Fourmi:
-    def __init__(self, stade='oeuf'):
+    def __init__(self, stade='oeuf', age=-1, ageMax=-1):
         if stade == 'oeuf':
             self.__stade = 'oeuf'
             self.age = 0
@@ -96,7 +99,13 @@ class Fourmi:
             print("Stade non reconnu, oeuf par défaut")
             self.__stade = 'oeuf'
             self.age = 0
-        self.ageMax = random.randint(300, 310)
+        
+        if age != -1:
+            self.age = age
+        if ageMax == -1:
+            self.ageMax = random.randint(300, 310)
+        else:
+            self.ageMax = ageMax
 
     @property
     def stade(self):
@@ -136,9 +145,13 @@ class Fourmi:
 
 
 class Reine(Fourmi):
-    def __init__(self, stade='adulte'):
-        super().__init__(stade)
-        self.ageMax = random.randint(600, 610)
+    def __init__(self, stade='adulte', age=-1, ageMax=-1):
+        super().__init__(stade, age)
+        
+        if ageMax == -1:
+            self.ageMax = random.randint(600, 610)
+        else:
+            self.ageMax = ageMax
 
 
     def pond(self):
@@ -188,6 +201,69 @@ class Temps:
     @vitesse.setter
     def vitesse(self, value):
         self.__vitesse = max(value, 1)
+
+class Sauvegarde:
+    def __init__(self, path=''):
+        if not path.endswith('.json'):
+            path = path + '.json'
+        self.path = path
+    
+    def sauve(self, colonie, temps):
+        
+        listeDesFourmis = []
+        for fourmi in colonie.listeDesFourmis:
+            listeDesFourmis.append({'stade': fourmi.stade, 'age': fourmi.age, 'ageMax': fourmi.ageMax})
+        reine = {'stade': colonie.reine.stade, 'age': colonie.reine.age, 'ageMax': colonie.reine.ageMax}
+        
+        data = json.dumps({'nourriture': colonie.nourriture,
+                           'listeDesFourmis': listeDesFourmis,
+                           'reine': reine,
+                           'minutes': temps.minutes,
+                           'vitesse': temps.vitesse})
+        
+        try:
+            with open(self.path, 'w') as fichier:
+                fichier.write(data)
+                sauvegardeTexte.config(bg=vertClair)
+        
+        except IOError:
+            sauvegardeTexte.config(bg=rouge)
+    
+    def charge(self):
+        global notreColonie, temps
+        try:
+            with open(self.path, 'r') as fichier:
+                data = json.loads(fichier.read())
+                
+                listeDesFourmis = []
+                for fourmi in data['listeDesFourmis']:
+                    fourmi = Fourmi(stade=fourmi['stade'], age=fourmi['age'], ageMax=fourmi['ageMax'])
+                    listeDesFourmis.append(fourmi)
+                reine = Reine(stade=data['reine']['stade'], age=data['reine']['age'], ageMax=data['reine']['ageMax'])
+                
+                notreColonie = Colonie(nourriture = data['nourriture'],
+                                    reine = reine,
+                                    listeDesFourmis = listeDesFourmis)
+                
+                temps = Temps(minutes=data['minutes'], vitesse=data['vitesse'])
+                jourSuivant_bouton.config(command=temps.jourSuivant)
+                
+                sauvegardeTexte.config(bg=vertClair)
+        
+        except (FileNotFoundError, IOError):
+            sauvegardeTexte.config(bg=rouge)
+        
+    def sauveInterface(self):
+        self.path = sauvegardeTexte.get("1.0", "end-1c")
+        if not self.path.endswith('.json'):
+            self.path = self.path + '.json'
+        self.sauve(notreColonie, temps)
+    
+    def chargeInterface(self):
+        self.path = sauvegardeTexte.get("1.0", "end-1c")
+        if not self.path.endswith('.json'):
+            self.path = self.path + '.json'
+        self.charge()
 
 
 def updateTemps():
@@ -312,6 +388,7 @@ def demarre():
     updateFourmis()
 
 temps = Temps(0)
+sauvegarde = Sauvegarde()
 
 ##########################
 ##########################
@@ -357,14 +434,19 @@ vitesseTresAccelere_bouton = Button(window, text='Vitesse très accélérée', c
                                     font="georgia 17 bold")
 jourSuivant_bouton = Button(window, text='Jour suivant', command=temps.jourSuivant, font="georgia 17 bold")
 
+sauveEcran = Label(window, text="Chemin de sauvegarde :", font="georgia 17 bold", bg=brun)
+sauvegardeTexte = Text(window, font="georgia 17 bold", bg=vertClair, width=1, height=1)
+sauve_bouton = Button(window, text='Sauvegarder', command=sauvegarde.sauveInterface, font="georgia 17 bold")
+charge_bouton = Button(window, text='Charger', command=sauvegarde.chargeInterface, font="georgia 17 bold")
+
 # l'image
 imageEcran = Label(window, image=images[0])
 
-for i in range(13):
+for i in range(18):
     window.columnconfigure(i, weight=1)
     window.rowconfigure(i, weight=1)
-window.columnconfigure(13, weight=1)
-window.rowconfigure(13, weight=20)
+window.columnconfigure(18, weight=1)
+window.rowconfigure(18, weight=20)
 
 jourEcran.grid(column=0, row=0, sticky='nsew', pady=1)
 heureEcran.grid(column=0, row=1, sticky='nsew', pady=1)
@@ -375,6 +457,12 @@ fourmisEcran.grid(column=0, row=5, sticky='nsew', pady=1)
 nourritureEcran.grid(column=0, row=6, sticky='nsew', pady=1)
 evenementsDeLaJournee.grid(column=0, row=11, sticky='nsew', pady=1)
 naissancesMortsDeLaJournee.grid(column=0, row=12, sticky='nsew', pady=1)
+
+sauveEcran.grid(column=0, row=13, sticky='nsew', pady=1)
+sauvegardeTexte.grid(column=0, row=14, sticky='nsew', pady=1)
+sauve_bouton.grid(column=0, row=15, sticky='nsew', pady=1)
+charge_bouton.grid(column=0, row=16, sticky='nsew', pady=1)
+
 
 # les boutons pour le temps
 vitesseNormal_bouton.grid(column=0, row=7, sticky='nsew', pady=1)
