@@ -197,6 +197,11 @@ class Temps:
         updateFourmis()
         return self.affichage()
 
+    def passerDeuxJours(self):
+        self.minutes += 2880 - self.minutes % 2880
+        updateFourmis()
+        return self.affichage()
+
     @property
     def vitesse(self):
         return self.__vitesse
@@ -466,6 +471,7 @@ vitesseAccelere_bouton = Button(window, text='Vitesse accélérée', command=vit
 vitesseTresAccelere_bouton = Button(window, text='Vitesse très accélérée', command=vitesseTreAccelere,
                                     font="georgia 17 bold")
 jourSuivant_bouton = Button(window, text='Jour suivant', command=temps.jourSuivant, font="georgia 17 bold")
+passerDeuxJours_bouton = Button(window, text='Passer 2 jours', command=temps.passerDeuxJours, font="georgia 17 bold")
 
 sauveEcran = Label(window, text="Chemin de sauvegarde :", font="georgia 17 bold", bg=brun)
 sauvegardeTexte = Text(window, font="georgia 17 bold", bg=vertClair, width=1, height=1)
@@ -495,6 +501,7 @@ sauveEcran.grid(column=0, row=13, sticky='nsew', pady=1)
 sauvegardeTexte.grid(column=0, row=14, sticky='nsew', pady=1)
 sauve_bouton.grid(column=0, row=15, sticky='nsew', pady=1)
 charge_bouton.grid(column=0, row=16, sticky='nsew', pady=1)
+passerDeuxJours_bouton.grid(column=0, row=17, sticky='nsew', pady=1)
 
 
 # les boutons pour le temps
