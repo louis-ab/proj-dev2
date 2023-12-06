@@ -38,9 +38,12 @@ class Colonie:
                                          ("attaque d'araignée", 10, 25),
                                          ("attaque d'humain", 1, 50),
                                          ("attaque d'oiseau", 50, 100),
-                                         ("attaque de lezard", 100, 150)
+                                         ("attaque de lezard", 100, 150),
+                                         ("nourriture bonus", 0, 200),
+                                         ("colonie agrandis", 0, 10),
+                                         ("attaque fongique", 0, 25)
                                          ]
-        self.poidsEvenementsAleatoire = [20, 5, 10, 2, 1, 1, 1]
+        self.poidsEvenementsAleatoire = [20, 5, 10, 2, 1, 1, 1, 15, 1, 2]
 
     def jour(self):
         self.tailleColonie = 0
@@ -73,7 +76,7 @@ class Colonie:
         else:
             self.reine.jour(0)
             self.naissances = 0
-        
+
         updateNaissanceDeces(self)
         nourritureRapporter()
         evenementsAleatoires()
@@ -99,7 +102,7 @@ class Fourmi:
             print("Stade non reconnu, oeuf par défaut")
             self.__stade = 'oeuf'
             self.age = 0
-        
+
         if age != -1:
             self.age = age
         if ageMax == -1:
@@ -147,7 +150,7 @@ class Fourmi:
 class Reine(Fourmi):
     def __init__(self, stade='adulte', age=-1, ageMax=-1):
         super().__init__(stade, age)
-        
+
         if ageMax == -1:
             self.ageMax = random.randint(600, 610)
         else:
@@ -207,58 +210,58 @@ class Sauvegarde:
         if not path.endswith('.json'):
             path = path + '.json'
         self.path = path
-    
+
     def sauve(self, colonie, temps):
-        
+
         listeDesFourmis = []
         for fourmi in colonie.listeDesFourmis:
             listeDesFourmis.append({'stade': fourmi.stade, 'age': fourmi.age, 'ageMax': fourmi.ageMax})
         reine = {'stade': colonie.reine.stade, 'age': colonie.reine.age, 'ageMax': colonie.reine.ageMax}
-        
+
         data = json.dumps({'nourriture': colonie.nourriture,
                            'listeDesFourmis': listeDesFourmis,
                            'reine': reine,
                            'minutes': temps.minutes,
                            'vitesse': temps.vitesse})
-        
+
         try:
             with open(self.path, 'w') as fichier:
                 fichier.write(data)
                 sauvegardeTexte.config(bg=vertClair)
-        
+
         except IOError:
             sauvegardeTexte.config(bg=rouge)
-    
+
     def charge(self):
         global notreColonie, temps
         try:
             with open(self.path, 'r') as fichier:
                 data = json.loads(fichier.read())
-                
+
                 listeDesFourmis = []
                 for fourmi in data['listeDesFourmis']:
                     fourmi = Fourmi(stade=fourmi['stade'], age=fourmi['age'], ageMax=fourmi['ageMax'])
                     listeDesFourmis.append(fourmi)
                 reine = Reine(stade=data['reine']['stade'], age=data['reine']['age'], ageMax=data['reine']['ageMax'])
-                
+
                 notreColonie = Colonie(nourriture = data['nourriture'],
                                     reine = reine,
                                     listeDesFourmis = listeDesFourmis)
-                
+
                 temps = Temps(minutes=data['minutes'], vitesse=data['vitesse'])
                 jourSuivant_bouton.config(command=temps.jourSuivant)
-                
+
                 sauvegardeTexte.config(bg=vertClair)
-        
+
         except (FileNotFoundError, IOError):
             sauvegardeTexte.config(bg=rouge)
-        
+
     def sauveInterface(self):
         self.path = sauvegardeTexte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
             self.path = self.path + '.json'
         self.sauve(notreColonie, temps)
-    
+
     def chargeInterface(self):
         self.path = sauvegardeTexte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
@@ -315,7 +318,7 @@ def evenementsAleatoires():
     message = textEvenements
     if notreColonie.tailleColonie > 1000:
         evenementActuel = \
-        random.choices(notreColonie.listeEvenementsAleatoire, weights=notreColonie.poidsEvenementsAleatoire, k=1)[0]
+            random.choices(notreColonie.listeEvenementsAleatoire, weights=notreColonie.poidsEvenementsAleatoire, k=1)[0]
         if evenementActuel[0] != 'rienNeSePasse':
             minMorts = evenementActuel[1]
             maxMorts = evenementActuel[2]
@@ -345,6 +348,36 @@ def evenementsAleatoires():
             else:
                 message = "Il y a eu une " + evenementActuel[0] + " qui a tuée " + str(nbrDeMort) + " de fourmis"
 
+            if evenementActuel[0] == 'nourriture bonus':
+                minNourriture = evenementActuel[1]
+                maxNourriture = evenementActuel[2]
+
+                nbrDeNourriture = random.randint(minNourriture, maxNourriture)
+                countNourriture = 0
+                while countNourriture < nbrDeNourriture:
+                    notreColonie.nourriture += 1
+                    countNourriture += 1
+
+                if nbrDeNourriture == 1:
+                    message = "Les fourmis ont trouvé 1 nourriture dans la nature"
+                else:
+                    message = "Les fourmis ont trouvé " + str(nbrDeNourriture) + " nourritures dans la nature"
+
+            if evenementActuel[0] == 'colonie agrandis':
+                minFourmi = evenementActuel[1]
+                maxFourmi = evenementActuel[2]
+
+                nbrDeFourmi = random.randint(minFourmi, maxFourmi)
+                countFourmi = 0
+                while countFourmi < nbrDeFourmi:
+                    notreColonie.tailleColonie += 1
+                    countFourmi += 1
+
+                if nbrDeFourmi == 1:
+                    message = "Il y a 1 fourmi qui a rejoint votre colonie"
+                else:
+                    message = "Il y a " + str(nbrDeFourmi) + " fourmis qui ont rejoint votre colonie"
+
 
     message = "Les événements : \n" + message
     if notreColonie.nourriture == 0:
@@ -356,7 +389,7 @@ def nourritureRapporter():
     if notreColonie.tailleColonie >= 1:
         for fourmi in notreColonie.listeDesFourmis:
             if fourmi.stade == 'adulte':
-                notreColonie.nourriture += random.randint(1,2)
+                notreColonie.nourriture += random.randint(1, 2)
 
 def updateNaissanceDeces(colonie):
     textNul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
@@ -374,16 +407,16 @@ def updateNaissanceDeces(colonie):
 
 def demarre():
     global notreColonie, temps
-    
+
     nourritureDebut = nourritureTexte.get("1.0", "end-1c")
     fourmiDebut = fourmiTexte.get("1.0", "end-1c")
-    
+
     nourritureTitre.destroy()
     fourmiTitre.destroy()
     nourritureTexte.destroy()
     fourmiTexte.destroy()
     commence_bouton.destroy()
-    
+
     notreColonie = Colonie(nourriture=int(nourritureDebut), tailleColonie=int(fourmiDebut))
     updateFourmis()
 
