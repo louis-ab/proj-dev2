@@ -473,7 +473,7 @@ def update_naissance__deces(colonie):
 def demarre():
     """
     creation de la colonie
-        PRE: -
+        PRE: nombre entier entré par l'utilisateur dans l'interface graphique
         POST: création de la colonie et lancement de la simulation
         """
     global notre_colonie, temps
