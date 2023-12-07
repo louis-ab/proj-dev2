@@ -191,6 +191,7 @@ class Temps:
 
     def affichage(self):
         """
+        calcul l'heur actuelle et le jour actuel
         PRE: -
         POST: retourne une chaine de charactère avec le numéro du jour et l'heure actuelle
         """
@@ -209,6 +210,7 @@ class Temps:
 
     def update(self):
         """
+        ajoute 1 minute à chaque lancement de la fonction
         PRE: -
         POST: retourne la fonction affiche() avec l'heure et le temps actuel
         """
@@ -219,6 +221,7 @@ class Temps:
 
     def jour_suivant(self):
         """
+        passe 1 jour dans la simulation
         PRE: -
         POST: retourne la fonction affiche() avec l'heure et le temps actuel
         """
@@ -228,6 +231,7 @@ class Temps:
     
     def passer_deux_jours(self):
         """
+        passe 2 jours dans la simulation
         PRE: -
         POST: retourne la fonction affiche() avec l'heure et le temps actuel
         """
@@ -468,6 +472,7 @@ def update_naissance__deces(colonie):
 
 def demarre():
     """
+    creation de la colonie
         PRE: -
         POST: création de la colonie et lancement de la simulation
         """
