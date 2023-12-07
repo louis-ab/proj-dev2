@@ -190,7 +190,10 @@ class Temps:
         self.__vitesse = vitesse
 
     def affichage(self):
-        "Patrycja"
+        """
+        PRE: -
+        POST: retourne une chaine de charactère avec le numéro du jour et l'heure actuelle
+        """
         minute = self.minutes % 60
         if minute < 10:
             minute = '0' + str(minute)
@@ -205,32 +208,41 @@ class Temps:
         return ('Jour ' + str(day), heure)
 
     def update(self):
-        "Patrycja"
+        """
+        PRE: -
+        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        """
         self.minutes += 1
         if self.minutes % 1440 == 0:
             update_fourmis()
         return self.affichage()
 
     def jour_suivant(self):
-        "Patrycja"
+        """
+        PRE: -
+        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        """
         self.minutes += 1440 - self.minutes % 1440
         update_fourmis()
         return self.affichage()
     
     def passer_deux_jours(self):
-        "Patrycja"
+        """
+        PRE: -
+        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        """
         self.minutes += 2880 - self.minutes % 2880
         update_fourmis()
         return self.affichage()
 
     @property
     def vitesse(self):
-        "Patrycja"
+
         return self.__vitesse
 
     @vitesse.setter
     def vitesse(self, value):
-        "Patrycja"
+
         self.__vitesse = max(value, 1)
 
 class Sauvegarde:
@@ -455,6 +467,10 @@ def update_naissance__deces(colonie):
     naissances_morts_de_la_journee.config(text=text)
 
 def demarre():
+    """
+        PRE: -
+        POST: création de la colonie et lancement de la simulation
+        """
     global notre_colonie, temps
 
     nourriture_debut = nourriture_texte.get("1.0", "end-1c")
