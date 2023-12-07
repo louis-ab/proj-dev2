@@ -173,6 +173,7 @@ class Reine(Fourmi):
 
     def pond(self):
         """Pond un/des œuf(s) et les renvoie."""
+        "Louis"
         if notre_colonie.taille_colonie < 1000 and notre_colonie.taille_colonie != 0:
             oeuf_min = 10
             oeuf_max = 30
@@ -189,6 +190,7 @@ class Temps:
         self.__vitesse = vitesse
 
     def affichage(self):
+        "Patrycja"
         minute = self.minutes % 60
         if minute < 10:
             minute = '0' + str(minute)
@@ -203,27 +205,32 @@ class Temps:
         return ('Jour ' + str(day), heure)
 
     def update(self):
+        "Patrycja"
         self.minutes += 1
         if self.minutes % 1440 == 0:
             update_fourmis()
         return self.affichage()
 
     def jour_suivant(self):
+        "Patrycja"
         self.minutes += 1440 - self.minutes % 1440
         update_fourmis()
         return self.affichage()
     
     def passer_deux_jours(self):
+        "Patrycja"
         self.minutes += 2880 - self.minutes % 2880
         update_fourmis()
         return self.affichage()
 
     @property
     def vitesse(self):
+        "Patrycja"
         return self.__vitesse
 
     @vitesse.setter
     def vitesse(self, value):
+        "Patrycja"
         self.__vitesse = max(value, 1)
 
 class Sauvegarde:
@@ -234,6 +241,7 @@ class Sauvegarde:
         self.path = path
 
     def sauve(self, colonie, temps):
+        "Louis"
 
         liste_des_fourmis = []
         for fourmi in colonie.liste_des_fourmis:
@@ -257,6 +265,7 @@ class Sauvegarde:
             sauvegarde_texte.config(bg=ROUGE)
 
     def charge(self):
+        "Louis"
         global notre_colonie, temps
         try:
             with open(self.path, 'r', encoding="utf8") as fichier:
@@ -283,12 +292,14 @@ class Sauvegarde:
             sauvegarde_texte.config(bg=ROUGE)
 
     def sauve_interface(self):
+        "Louis"
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
             self.path = self.path + '.json'
         self.sauve(notre_colonie, temps)
 
     def charge_interface(self):
+        "Louis"
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
             self.path = self.path + '.json'
@@ -296,6 +307,7 @@ class Sauvegarde:
 
 
 def update_temps():
+    "Thierry"
     jour, heure = temps.update()
 
     heure_ecran.config(text=heure)
@@ -304,6 +316,7 @@ def update_temps():
 
 
 def update_fourmis():
+    "Thierry"
     notre_colonie.jour()
     reine, nb_fourmis, nb_oeufs, nb_larves, nourriture = notre_colonie.stats()
 
@@ -340,6 +353,7 @@ def vitesse_tres_accelere():
 
 
 def evenements_aleatoires():
+    "Thierry"
     text_evenements = "Rien de particulier ne s'est passé hier"
     message = text_evenements
     if notre_colonie.taille_colonie > 1000:
@@ -418,12 +432,14 @@ def evenements_aleatoires():
 
 
 def nourriture_rapporter():
+    "Thierry"
     if notre_colonie.taille_colonie >= 1:
         for fourmi in notre_colonie.liste_des_fourmis:
             if fourmi.stade == 'adulte':
                 notre_colonie.nourriture += random.randint(1, 2)
 
 def update_naissance__deces(colonie):
+    "Thierry"
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
     nbr_naissance = colonie.naissances
