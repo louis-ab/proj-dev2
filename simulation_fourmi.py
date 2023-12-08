@@ -8,7 +8,8 @@ CheminsImages = ['./1.jpeg', './2.jpeg', './3.jpeg', './4.jpeg']
 
 class Colonie:
     """Représente une colonie de fourmis, contenant une reine et plusieurs fourmis."""
-    def __init__(self, nourriture, reine = -1, liste_des_fourmis=-1,
+
+    def __init__(self, nourriture, reine=-1, liste_des_fourmis=-1,
                  taille_colonie=0, oeufs=0, larves=0):
         self.nourriture = nourriture
         if reine == -1:
@@ -40,17 +41,18 @@ class Colonie:
         for adulte in range(taille_colonie - self.taille_colonie):
             self.liste_des_fourmis.append(Fourmi(stade='adulte'))
         self.liste_evenements_aleatoire = [("rienNeSePasse", 0, 0),
-                                         ("attaque de fourmis", 0, 3),
-                                         ("fourmisPerdu", 1, 4),
-                                         ("attaque d'araignée", 10, 25),
-                                         ("attaque d'humain", 1, 50),
-                                         ("attaque d'oiseau", 50, 100),
-                                         ("attaque de lezard", 100, 150),
-                                         ("nourriture bonus", 0, 200),
-                                         ("colonie agrandis", 0, 10),
-                                         ("attaque fongique", 0, 25)
-                                         ]
-        self.poids_evenements_aleatoire = [20, 5, 10, 2, 1, 1, 1, 15, 1, 2]
+                                           ("attaque de fourmis", 0, 3),
+                                           ("fourmisPerdu", 1, 4),
+                                           ("attaque d'araignée", 10, 25),
+                                           ("attaque d'humain", 1, 50),
+                                           ("attaque d'oiseau", 50, 100),
+                                           ("attaque de lezard", 100, 150),
+                                           ("nourriture bonus", 0, 200),
+                                           ("colonie agrandis", 0, 10),
+                                           ("attaque fongique", 0, 25),
+                                           ("climatique", 50, 150)
+                                           ]
+        self.poids_evenements_aleatoire = [20, 5, 10, 2, 1, 1, 1, 15, 1, 2, 0.5]
 
     def jour(self):
         """Simule la colonie un jour plus tard."""
@@ -99,6 +101,7 @@ class Colonie:
 
 class Fourmi:
     """Représente une fourmi. Elle a un stade et un age qui dépend du stade."""
+
     def __init__(self, stade='oeuf', age=-1, age_max=-1):
         if stade == 'oeuf':
             self.__stade = 'oeuf'
@@ -162,6 +165,7 @@ class Fourmi:
 
 class Reine(Fourmi):
     """Représente une Reine. Elle est une fourmi qui pond des œufs."""
+
     def __init__(self, stade='adulte', age=-1, age_max=-1):
         super().__init__(stade, age)
 
@@ -169,7 +173,6 @@ class Reine(Fourmi):
             self.age_max = random.randint(600, 610)
         else:
             self.age_max = age_max
-
 
     def pond(self):
         """Pond un/des œuf(s) et les renvoie."""
@@ -185,15 +188,17 @@ class Reine(Fourmi):
 
 class Temps:
     """Contrôle le temps et sa vitesse"""
+
     def __init__(self, minutes=0, vitesse=1000):
         self.minutes = minutes
         self.__vitesse = vitesse
 
     def affichage(self):
         """
-        calcul l'heur actuelle et le jour actuel
-        PRE: -
-        POST: retourne une chaine de charactère avec le numéro du jour et l'heure actuelle
+        calcule l'heure actuelle et le jour actuel
+
+        PRÉ:-
+        POST : retourne une chaîne de caractère avec le numéro du jour et l’heure actuelle
         """
         minute = self.minutes % 60
         if minute < 10:
@@ -211,8 +216,8 @@ class Temps:
     def update(self):
         """
         ajoute 1 minute à chaque lancement de la fonction
-        PRE: -
-        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        PRÉ:-
+        POST: retourne la fonction affiche() avec l’heure et le temps actuel
         """
         self.minutes += 1
         if self.minutes % 1440 == 0:
@@ -222,18 +227,18 @@ class Temps:
     def jour_suivant(self):
         """
         passe 1 jour dans la simulation
-        PRE: -
-        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        PRÉ:-
+        POST: retourne la fonction affiche() avec l’heure et le temps actuel
         """
         self.minutes += 1440 - self.minutes % 1440
         update_fourmis()
         return self.affichage()
-    
+
     def passer_deux_jours(self):
         """
         passe 2 jours dans la simulation
-        PRE: -
-        POST: retourne la fonction affiche() avec l'heure et le temps actuel
+        PRÉ:-
+        POST: retourne la fonction affiche() avec l’heure et le temps actuel
         """
         self.minutes += 2880 - self.minutes % 2880
         update_fourmis()
@@ -241,16 +246,16 @@ class Temps:
 
     @property
     def vitesse(self):
-
         return self.__vitesse
 
     @vitesse.setter
     def vitesse(self, value):
-
         self.__vitesse = max(value, 1)
+
 
 class Sauvegarde:
     """Permet de créer et charger des fichiers de sauvegarde."""
+
     def __init__(self, path=''):
         if not path.endswith('.json'):
             path = path + '.json'
@@ -261,8 +266,8 @@ class Sauvegarde:
 
         liste_des_fourmis = []
         for fourmi in colonie.liste_des_fourmis:
-            liste_des_fourmis.append({'stade': fourmi.stade,'age': fourmi.age,
-                                    'age_max': fourmi.age_max})
+            liste_des_fourmis.append({'stade': fourmi.stade, 'age': fourmi.age,
+                                      'age_max': fourmi.age_max})
         reine = {'stade': colonie.reine.stade, 'age': colonie.reine.age,
                  'age_max': colonie.reine.age_max}
 
@@ -295,9 +300,9 @@ class Sauvegarde:
                 reine = Reine(stade=data['reine']['stade'], age=data['reine']['age'],
                               age_max=data['reine']['age_max'])
 
-                notre_colonie = Colonie(nourriture = data['nourriture'],
-                                    reine = reine,
-                                    liste_des_fourmis = liste_des_fourmis)
+                notre_colonie = Colonie(nourriture=data['nourriture'],
+                                        reine=reine,
+                                        liste_des_fourmis=liste_des_fourmis)
 
                 temps = Temps(minutes=data['minutes'], vitesse=data['vitesse'])
                 jour_suivant_bouton.config(command=temps.jour_suivant)
@@ -323,7 +328,11 @@ class Sauvegarde:
 
 
 def update_temps():
-    "Thierry"
+    """met à jour les données de temps
+
+    PRE: le jour et l'heure
+    POST: modifie dans l'interface le jour et l'heure
+    """
     jour, heure = temps.update()
 
     heure_ecran.config(text=heure)
@@ -332,7 +341,11 @@ def update_temps():
 
 
 def update_fourmis():
-    "Thierry"
+    """met à jour les stats de la colonie
+
+    PRE: les stats de la colonie et des images
+    POST: modifie dans l'interface l'image, la reine, le nombre de fourmis, d'oeuf et de larves et la quantité de nourriture
+    """
     notre_colonie.jour()
     reine, nb_fourmis, nb_oeufs, nb_larves, nourriture = notre_colonie.stats()
 
@@ -369,15 +382,20 @@ def vitesse_tres_accelere():
 
 
 def evenements_aleatoires():
-    "Thierry"
+    """générer un evenement aleatoire
+
+    PRE: une liste des événements possibles
+    POST: renvoie une variable qui contient une chaîne de caractère affichant un évènement aléatoire
+            qui modifie la taille de la colonie ou la quantité de nourriture chaque jour.
+    """
     text_evenements = "Rien de particulier ne s'est passé hier"
     message = text_evenements
     if notre_colonie.taille_colonie > 1000:
         evenement_actuel = \
-        random.choices(notre_colonie.liste_evenements_aleatoire,
-                       weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
+            random.choices(notre_colonie.liste_evenements_aleatoire,
+                           weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
         if evenement_actuel[0] in ("attaque de fourmis", "fourmisPerdu", "attaque d'araignée",
-                                   "attaque d'humain", "attaque d'oiseau", "attaque de lezard"):
+                                   "attaque d'humain", "attaque d'oiseau", "attaque de lezard", "attaque fongique", "climatique"):
             min_morts = evenement_actuel[1]
             max_morts = evenement_actuel[2]
 
@@ -399,15 +417,17 @@ def evenements_aleatoires():
                     message = "1 fourmi s'est perdue dans la nature"
                 else:
                     message = str(nbr_de_mort) + " fourmis se sont perdues dans la nature"
+            elif evenement_actuel[0] == 'climatique':
+                message = str(nbr_de_mort) + " fourmis sont morts de raison climatique"
             elif nbr_de_mort == 0:
                 message = "Il y a eu une " + evenement_actuel[0] + " qui n'a pas tuée de fourmi"
             elif nbr_de_mort == 1:
                 message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                    + str(nbr_de_mort) + " de fourmi"
+                          + str(nbr_de_mort) + " de fourmi"
             else:
                 message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                    + str(nbr_de_mort) + " de fourmis"
-            
+                          + str(nbr_de_mort) + " de fourmis"
+
         elif evenement_actuel[0] == 'nourriture bonus':
             min_nourriture = evenement_actuel[1]
             max_nourriture = evenement_actuel[2]
@@ -422,7 +442,7 @@ def evenements_aleatoires():
                 message = "Les fourmis ont trouvé 1 nourriture dans la nature"
             else:
                 message = "Les fourmis ont trouvé " + str(nbr_de_nourriture) \
-                    + " nourriture dans la nature"
+                          + " nourriture dans la nature"
 
         elif evenement_actuel[0] == 'colonie agrandis':
             min_fourmi = evenement_actuel[1]
@@ -438,8 +458,7 @@ def evenements_aleatoires():
                 message = "Il y a 1 fourmi qui a rejoint votre colonie"
             else:
                 message = "Il y a " + str(nbr_de_fourmi) \
-                    + " fourmis qui ont rejoint votre colonie"
-
+                          + " fourmis qui ont rejoint votre colonie"
 
     message = "Les événements : \n" + message
     if notre_colonie.nourriture == 0:
@@ -448,14 +467,23 @@ def evenements_aleatoires():
 
 
 def nourriture_rapporter():
-    "Thierry"
+    """augmentation de la nourriture
+
+    PRE: la taille et la quantité de nourriture de la colonie
+    POST: modifie la quantité de nourriture chaque jour
+    """
     if notre_colonie.taille_colonie >= 1:
         for fourmi in notre_colonie.liste_des_fourmis:
             if fourmi.stade == 'adulte':
                 notre_colonie.nourriture += random.randint(1, 2)
 
+
 def update_naissance__deces(colonie):
-    "Thierry"
+    """met à jour le nombre de naissance et de décès
+
+    PRE: des variables qui comptent les morts et les naissances de la colonie
+    POST: renvoie une variable contenant une chaîne de caractères qui affiche le nombre de naissance et de décès chaque jour.
+    """
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
     nbr_naissance = colonie.naissances
@@ -470,12 +498,13 @@ def update_naissance__deces(colonie):
         text = text_nul
     naissances_morts_de_la_journee.config(text=text)
 
+
 def demarre():
     """
-    creation de la colonie
-        PRE: nombre entier entré par l'utilisateur dans l'interface graphique
-        POST: création de la colonie et lancement de la simulation
-        """
+    création de la colonie
+    PRE: nombre entier entré par l'utilisateur dans l'interface graphique
+    POST: création de la colonie et lancement de la simulation
+    """
     global notre_colonie, temps
 
     nourriture_debut = nourriture_texte.get("1.0", "end-1c")
@@ -490,8 +519,9 @@ def demarre():
     notre_colonie = Colonie(nourriture=int(nourriture_debut), taille_colonie=int(fourmi_debut))
     update_fourmis()
 
+
 temps = Temps(0)
-sauvegarde = Sauvegarde() #demo git
+sauvegarde = Sauvegarde()
 
 ##########################
 ##########################
@@ -528,28 +558,28 @@ nourriture_ecran = tkinter.Label(window, text="Nourriture : ?", font="georgia 17
 jour_ecran = tkinter.Label(window, text="Jour 0", font="georgia 17 bold", bg=BRUN_FONCE)
 heure_ecran = tkinter.Label(window, text='00:00', font="georgia 17 bold", bg=BRUN_FONCE)
 evenements_de_la_journee = tkinter.Label(window, text="Les événements : \n",
-                              font="georgia 17 bold", bg=BRUN_FONCE)
+                                         font="georgia 17 bold", bg=BRUN_FONCE)
 naissances_morts_de_la_journee = tkinter.Label(window, text="Naissances et Morts",
-                                   font="georgia 17 bold", bg=BRUN_FONCE)
+                                               font="georgia 17 bold", bg=BRUN_FONCE)
 
 # les boutons pour le temps
 vitesse_normal_bouton = tkinter.Button(window, text='Vitesse normale', command=vitesse_normale,
-                              font="georgia 17 bold")
+                                       font="georgia 17 bold")
 vitesse_accelere_bouton = tkinter.Button(window, text='Vitesse accélérée', command=vitesse_accelere,
-                                font="georgia 17 bold")
+                                         font="georgia 17 bold")
 vitesse_tres_accelere_bouton = tkinter.Button(window, text='Vitesse très accélérée',
-                                    command=vitesse_tres_accelere, font="georgia 17 bold")
+                                              command=vitesse_tres_accelere, font="georgia 17 bold")
 jour_suivant_bouton = tkinter.Button(window, text='Jour suivant', command=temps.jour_suivant,
-                            font="georgia 17 bold")
+                                     font="georgia 17 bold")
 passer_deux_jours_bouton = tkinter.Button(window, text='Passer 2 jours',
-                                          command=temps.passer_deux_jours,font="georgia 17 bold")
+                                          command=temps.passer_deux_jours, font="georgia 17 bold")
 
 sauve_ecran = tkinter.Label(window, text="Chemin de sauvegarde :", font="georgia 17 bold", bg=BRUN)
 sauvegarde_texte = tkinter.Text(window, font="georgia 17 bold", bg=VERT_CLAIR, width=1, height=1)
 sauve_bouton = tkinter.Button(window, text='Sauvegarder', command=sauvegarde.sauve_interface,
-                      font="georgia 17 bold")
+                              font="georgia 17 bold")
 charge_bouton = tkinter.Button(window, text='Charger', command=sauvegarde.charge_interface,
-                       font="georgia 17 bold")
+                               font="georgia 17 bold")
 
 # l'image
 image_ecran = tkinter.Label(window, image=images[0])
@@ -575,7 +605,6 @@ sauvegarde_texte.grid(column=0, row=14, sticky='nsew', pady=1)
 sauve_bouton.grid(column=0, row=15, sticky='nsew', pady=1)
 charge_bouton.grid(column=0, row=16, sticky='nsew', pady=1)
 passer_deux_jours_bouton.grid(column=0, row=17, sticky='nsew', pady=1)
-
 
 # les boutons pour le temps
 vitesse_normal_bouton.grid(column=0, row=7, sticky='nsew', pady=1)
