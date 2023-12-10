@@ -394,8 +394,7 @@ def evenements_aleatoires():
         evenement_actuel = \
             random.choices(notre_colonie.liste_evenements_aleatoire,
                            weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
-        if evenement_actuel[0] in ("attaque de fourmis", "fourmisPerdu", "attaque d'araignée",
-                                   "attaque d'humain", "attaque d'oiseau", "attaque de lezard", "attaque fongique", "climatique"):
+        if evenement_actuel[0] != "rienNeSePasse":
             min_morts = evenement_actuel[1]
             max_morts = evenement_actuel[2]
 
@@ -693,12 +692,13 @@ def ajout_evenement():
         poids = int(poids)
 
 
-        if mort_min >= mort_max:
+        if mort_min > mort_max:
             raise ValueError("Le nombre de morts minimum doit être INFÉRIEUR au nombre de morts maximum")
 
         notre_colonie.liste_evenements_aleatoire.append((evenement, mort_min, mort_max))
         notre_colonie.poids_evenements_aleatoire.append(poids)
 
+        evenement_ajoute.config(text="Votre événement '" + evenement + "' a été ajouté à la simulataion!")
         evenement_ajoute.pack()
 
     except ValueError as e:
@@ -706,7 +706,7 @@ def ajout_evenement():
         evenement_utilisateur_erreur.pack()
 
 
-bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation", command=ajout_evenement)
+bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation", command=ajout_evenement, font="georgia 17 bold")
 bouton_evenement.pack()
 
 
