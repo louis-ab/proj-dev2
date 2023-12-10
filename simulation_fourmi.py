@@ -540,6 +540,7 @@ ROUGE = "#BB0000"
 
 window = tkinter.Tk()
 
+
 window.title("La colonie de fourmis")
 window.geometry("1600x900")
 window.minsize(1600, 900)
@@ -628,5 +629,89 @@ nourriture_texte.place(x=450, y=200, width=200, height=50)
 fourmi_texte.place(x=850, y=200, width=200, height=50)
 commence_bouton.place(x=650, y=300, width=200, height=50)
 
+
+
+##########################
+##########################
+# fenêtre ajout d'événements
+##########################
+##########################
+
+window_evenements = tkinter.Tk()
+
+
+window_evenements.title("Ajout d'événements aléatoires")
+window_evenements.geometry("600x600")
+window_evenements.minsize(600, 600)
+window_evenements.config(background=JAUNE)
+
+nouvel_evenement = tkinter.Label(window_evenements, text="Nom de l'événement", font="georgia 17 bold", bg=BRUN)
+mort_min_evenement = tkinter.Label(window_evenements, text="Nombre de mort minimum", font="georgia 17 bold", bg=BRUN)
+mort_max_evenement = tkinter.Label(window_evenements, text="Nombre de mort maximum", font="georgia 17 bold", bg=BRUN)
+poid_evenement = tkinter.Label(window_evenements, text="Fréquence d'apparition de l'évenement", font="georgia 17 bold", bg=BRUN_FONCE)
+
+evenement_ajoute = tkinter.Label(window_evenements, text="Votre événement a été ajouté à la simulataion!", font="georgia 17 bold", bg=VERT)
+evenement_utilisateur_erreur = tkinter.Label(window_evenements, text="ERREUR", font="georgia 17 bold", bg=ROUGE)
+
+#zone de texte
+evenement_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
+mort_min_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
+mort_max_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
+poids_evenement_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
+
+nouvel_evenement.pack()
+evenement_utilisateur.pack()
+
+mort_min_evenement.pack()
+mort_min_utilisateur.pack()
+mort_max_evenement.pack()
+mort_max_utilisateur.pack()
+
+poid_evenement.pack()
+poids_evenement_utilisateur.pack()
+
+
+def ajout_evenement():
+    global notre_colonie
+    evenement = evenement_utilisateur.get()
+    mort_min = mort_min_utilisateur.get()
+    mort_max = mort_max_utilisateur.get()
+    poids = poids_evenement_utilisateur.get()
+
+
+    try:
+        if not (mort_min.isdigit() and mort_max.isdigit() and poids.isdigit()):
+            raise ValueError("Le nombre de mort et la fréquence doivent être des NOMBRES")
+    except ValueError as e:
+        evenement_utilisateur_erreur.config(text=e)
+        evenement_utilisateur_erreur.pack()
+        return
+
+    try:
+        mort_min = int(mort_min)
+        mort_max = int(mort_max)
+        poids = int(poids)
+
+
+        if mort_min >= mort_max:
+            raise ValueError("Le nombre de morts minimum doit être INFÉRIEUR au nombre de morts maximum")
+
+        notre_colonie.liste_evenements_aleatoire.append((evenement, mort_min, mort_max))
+        notre_colonie.poids_evenements_aleatoire.append(poids)
+
+        evenement_ajoute.pack()
+
+    except ValueError as e:
+        evenement_utilisateur_erreur.config(text=e)
+        evenement_utilisateur_erreur.pack()
+
+
+bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation", command=ajout_evenement)
+bouton_evenement.pack()
+
+
+
+
 update_temps()
 window.mainloop()
+window_evenements.mainloop()
