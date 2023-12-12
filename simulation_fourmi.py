@@ -176,7 +176,7 @@ class Reine(Fourmi):
 
     def pond(self):
         """Pond un/des œuf(s) et les renvoie."""
-        "Louis"
+        """Louis"""
         if notre_colonie.taille_colonie < 1000 and notre_colonie.taille_colonie != 0:
             oeuf_min = 10
             oeuf_max = 30
@@ -262,7 +262,7 @@ class Sauvegarde:
         self.path = path
 
     def sauve(self, colonie, temps):
-        "Louis"
+        """Louis"""
 
         liste_des_fourmis = []
         for fourmi in colonie.liste_des_fourmis:
@@ -286,7 +286,7 @@ class Sauvegarde:
             sauvegarde_texte.config(bg=ROUGE)
 
     def charge(self):
-        "Louis"
+        """Louis"""
         global notre_colonie, temps
         try:
             with open(self.path, 'r', encoding="utf8") as fichier:
@@ -313,14 +313,14 @@ class Sauvegarde:
             sauvegarde_texte.config(bg=ROUGE)
 
     def sauve_interface(self):
-        "Louis"
+        """Louis"""
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
             self.path = self.path + '.json'
         self.sauve(notre_colonie, temps)
 
     def charge_interface(self):
-        "Louis"
+        """Louis"""
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
             self.path = self.path + '.json'
@@ -344,7 +344,8 @@ def update_fourmis():
     """met à jour les stats de la colonie
 
     PRE: les stats de la colonie et des images
-    POST: modifie dans l'interface l'image, la reine, le nombre de fourmis, d'oeuf et de larves et la quantité de nourriture
+    POST: modifie dans l'interface l'image,
+          la reine, le nombre de fourmis,d'oeuf et de larves et la quantité de nourriture
     """
     notre_colonie.jour()
     reine, nb_fourmis, nb_oeufs, nb_larves, nourriture = notre_colonie.stats()
@@ -481,7 +482,8 @@ def update_naissance__deces(colonie):
     """met à jour le nombre de naissance et de décès
 
     PRE: des variables qui comptent les morts et les naissances de la colonie
-    POST: renvoie une variable contenant une chaîne de caractères qui affiche le nombre de naissance et de décès chaque jour.
+    POST: renvoie une variable contenant une chaîne de caractères
+          qui affiche le nombre de naissance et de décès chaque jour.
     """
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
@@ -629,7 +631,6 @@ fourmi_texte.place(x=850, y=200, width=200, height=50)
 commence_bouton.place(x=650, y=300, width=200, height=50)
 
 
-
 ##########################
 ##########################
 # fenêtre ajout d'événements
@@ -647,12 +648,14 @@ window_evenements.config(background=JAUNE)
 nouvel_evenement = tkinter.Label(window_evenements, text="Nom de l'événement", font="georgia 17 bold", bg=BRUN)
 mort_min_evenement = tkinter.Label(window_evenements, text="Nombre de mort minimum", font="georgia 17 bold", bg=BRUN)
 mort_max_evenement = tkinter.Label(window_evenements, text="Nombre de mort maximum", font="georgia 17 bold", bg=BRUN)
-poid_evenement = tkinter.Label(window_evenements, text="Fréquence d'apparition de l'évenement", font="georgia 17 bold", bg=BRUN_FONCE)
+poid_evenement = tkinter.Label(window_evenements, text="Fréquence d'apparition de l'évenement",
+                               font="georgia 17 bold", bg=BRUN_FONCE)
 
-evenement_ajoute = tkinter.Label(window_evenements, text="Votre événement a été ajouté à la simulataion!", font="georgia 17 bold", bg=VERT)
+evenement_ajoute = tkinter.Label(window_evenements, text="Votre événement a été ajouté à la simulataion!",
+                                 font="georgia 17 bold", bg=VERT)
 evenement_utilisateur_erreur = tkinter.Label(window_evenements, text="ERREUR", font="georgia 17 bold", bg=ROUGE)
 
-#zone de texte
+
 evenement_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
 mort_min_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
 mort_max_utilisateur = tkinter.Entry(window_evenements, bg=VERT_CLAIR)
@@ -671,47 +674,37 @@ poids_evenement_utilisateur.pack()
 
 
 def ajout_evenement():
-    global notre_colonie
+
     evenement = evenement_utilisateur.get()
     mort_min = mort_min_utilisateur.get()
     mort_max = mort_max_utilisateur.get()
     poids = poids_evenement_utilisateur.get()
 
-
     try:
         if not (mort_min.isdigit() and mort_max.isdigit() and poids.isdigit()):
-            raise ValueError("Le nombre de mort et la fréquence doivent être des NOMBRES")
-    except ValueError as e:
+            raise Exception("Le nombre de mort et la fréquence doivent être des NOMBRES")
+    except Exception as e:
         evenement_utilisateur_erreur.config(text=e)
         evenement_utilisateur_erreur.pack()
         return
-
     try:
         mort_min = int(mort_min)
         mort_max = int(mort_max)
         poids = int(poids)
-
-
         if mort_min > mort_max:
-            raise ValueError("Le nombre de morts minimum doit être INFÉRIEUR au nombre de morts maximum")
-
+            raise Exception("Le nombre de morts minimum doit être INFÉRIEUR au nombre de morts maximum")
         notre_colonie.liste_evenements_aleatoire.append((evenement, mort_min, mort_max))
         notre_colonie.poids_evenements_aleatoire.append(poids)
-
         evenement_ajoute.config(text="Votre événement '" + evenement + "' a été ajouté à la simulataion!")
         evenement_ajoute.pack()
-
-    except ValueError as e:
+    except Exception as e:
         evenement_utilisateur_erreur.config(text=e)
         evenement_utilisateur_erreur.pack()
 
 
-bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation", command=ajout_evenement, font="georgia 17 bold")
+bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation",
+                                  command=ajout_evenement, font="georgia 17 bold")
 bouton_evenement.pack()
-
-
-
-
 update_temps()
-window.mainloop()
 window_evenements.mainloop()
+window.mainloop()
