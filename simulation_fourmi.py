@@ -433,8 +433,13 @@ def evenements_aleatoires():
         evenement_actuel = \
             random.choices(notre_colonie.liste_evenements_aleatoire,
                            weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
-        match evenement_actuel[0]:
-            case 'nourriture bonus':
+        text_evenements = "Rien de particulier ne s'est passé hier"
+        message = text_evenements
+        if notre_colonie.taille_colonie > 1000:
+            evenement_actuel = \
+                random.choices(notre_colonie.liste_evenements_aleatoire,
+                               weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
+            if evenement_actuel[0] == 'nourriture bonus':
                 min_nourriture = evenement_actuel[1]
                 max_nourriture = evenement_actuel[2]
 
@@ -448,9 +453,8 @@ def evenements_aleatoires():
                     message = "Les fourmis ont trouvé 1 nourriture dans la nature"
                 else:
                     message = "Les fourmis ont trouvé " + str(nbr_de_nourriture) \
-                            + " nourriture dans la nature"
-
-            case 'colonie agrandis':
+                              + " nourriture dans la nature"
+            elif evenement_actuel[0] == 'colonie agrandis':
                 min_fourmi = evenement_actuel[1]
                 max_fourmi = evenement_actuel[2]
 
@@ -464,12 +468,11 @@ def evenements_aleatoires():
                     message = "Il y a 1 fourmi qui a rejoint votre colonie"
                 else:
                     message = "Il y a " + str(nbr_de_fourmi) \
-                            + " fourmis qui ont rejoint votre colonie"
-
-            case 'rienNeSePasse':
+                              + " fourmis qui ont rejoint votre colonie"
+            elif evenement_actuel[0] == 'rienNeSePasse':
                 pass
 
-            case _:
+            else:
                 min_morts = evenement_actuel[1]
                 max_morts = evenement_actuel[2]
 
@@ -497,15 +500,15 @@ def evenements_aleatoires():
                     message = "Il y a eu une " + evenement_actuel[0] + " qui n'a pas tuée de fourmi"
                 elif nbr_de_mort == 1:
                     message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                                + str(nbr_de_mort) + " de fourmi"
+                              + str(nbr_de_mort) + " de fourmi"
                 else:
                     message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                                + str(nbr_de_mort) + " de fourmis"
+                              + str(nbr_de_mort) + " de fourmis"
 
-    message = "Les événements : \n" + message
-    if notre_colonie.nourriture == 0:
-        message += "\nIl n'y a plus de nourriture !"
-    evenements_de_la_journee.config(text=message)
+        message = "Les événements : \n" + message
+        if notre_colonie.nourriture == 0:
+            message += "\nIl n'y a plus de nourriture !"
+        evenements_de_la_journee.config(text=message)
 
 
 def nourriture_rapporter():
@@ -693,11 +696,11 @@ mort_min_evenement = tkinter.Label(window_evenements, text="Nombre de mort minim
                                    font="georgia 17 bold", bg=BRUN)
 mort_max_evenement = tkinter.Label(window_evenements, text="Nombre de mort maximum",
                                    font="georgia 17 bold", bg=BRUN)
-poid_evenement = tkinter.Label(window_evenements, text="Fréquence d'apparition de l'évenement",
+poid_evenement = tkinter.Label(window_evenements, text="Fréquence d'apparition de l'événement",
                                font="georgia 17 bold", bg=BRUN_FONCE)
 
 evenement_ajoute = tkinter.Label(window_evenements,
-                                 text="Votre événement a été ajouté à la simulataion!",
+                                 text="Votre événement a été ajouté à la simulation!",
                                  font="georgia 17 bold", bg=VERT)
 evenement_utilisateur_erreur = tkinter.Label(window_evenements, text="ERREUR",
                                              font="georgia 17 bold", bg=ROUGE)
@@ -744,14 +747,14 @@ def ajout_evenement():
         notre_colonie.liste_evenements_aleatoire.append((evenement, mort_min, mort_max))
         notre_colonie.poids_evenements_aleatoire.append(poids)
         evenement_ajoute.config(text="Votre événement '" + evenement +
-                                "' a été ajouté à la simulataion!")
+                                "' a été ajouté à la simulation!")
         evenement_ajoute.pack()
     except TropGrand:
         evenement_utilisateur_erreur.config(text=TropGrand)
         evenement_utilisateur_erreur.pack()
 
 
-bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'évenement à la simulation",
+bouton_evenement = tkinter.Button(window_evenements, text="Ajouter l'événement à la simulation",
                                   command=ajout_evenement, font="georgia 17 bold")
 bouton_evenement.pack()
 update_temps()
