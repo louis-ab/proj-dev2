@@ -555,21 +555,28 @@ def demarre():
     POST: création de la colonie avec les paramètres entré par l'utilisateur(nombre de fourmis et quantité de nourriture),
           lancement de la simulation,
           retire dans l'interface graphique les champs pour entrer la nouriture et le nombre de fourmis initials
-
+    RAISE: PasNombre si nourriture_debut et fourmi_debut sont pas des nombres
     """
     global notre_colonie, temps
 
     nourriture_debut = nourriture_texte.get("1.0", "end-1c")
     fourmi_debut = fourmi_texte.get("1.0", "end-1c")
 
-    nourriture_titre.destroy()
-    fourmi_titre.destroy()
-    nourriture_texte.destroy()
-    fourmi_texte.destroy()
-    commence_bouton.destroy()
+    try:
+        if not (nourriture_debut.isdigit() and fourmi_debut.isdigit()):
+            raise PasNombre("La quantité de fourmis et de nourriture doivent être des NOMBRES")
 
-    notre_colonie = Colonie(nourriture=int(nourriture_debut), taille_colonie=int(fourmi_debut))
-    update_fourmis()
+        nourriture_titre.destroy()
+        fourmi_titre.destroy()
+        nourriture_texte.destroy()
+        fourmi_texte.destroy()
+        commence_bouton.destroy()
+
+        notre_colonie = Colonie(nourriture=int(nourriture_debut), taille_colonie=int(fourmi_debut))
+        update_fourmis()
+
+    except PasNombre as e:
+        print(e)
 
 
 temps = Temps()
