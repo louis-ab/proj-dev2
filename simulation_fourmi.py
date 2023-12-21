@@ -261,7 +261,7 @@ class Temps:
     def passer_deux_jours(self):
         """
         passe 2 jours dans la simulation
-        PRÉ: existance de la self.fonction jour_suivant()
+        PRÉ: existance de la fonction self.jour_suivant()
         POST: exécute la fonction jour_suivant() 2 fois, ce qui permet d'avancer la simulation de 2 jours
         """
         self.jour_suivant()
