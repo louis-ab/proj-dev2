@@ -722,7 +722,6 @@ mort_max_utilisateur.pack()
 poid_evenement.pack()
 poids_evenement_utilisateur.pack()
 
-
 def ajout_evenement():
     """Permet d'ajouter un événement aléatoire."""
 
