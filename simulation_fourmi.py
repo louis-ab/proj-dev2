@@ -372,8 +372,12 @@ class Sauvegarde:
 def update_temps():
     """met à jour les données de temps
 
-    PRE: le jour et l'heure
-    POST: modifie dans l'interface le jour et l'heure
+    PRE: le jour et l'heure de l'objet Temps
+    POST: modifie le jour et l'heure.
+          modifie dans l'interface graphique :
+          - la configuration de l'heure qui affiche l'heure dans la simulation
+          - la configuration du jour qui affiche le nombre de jour passé dans la simulation
+          - la vitesse de l'heure qui tourne dans la simulation.
     """
     jour, heure = temps.update()
 
@@ -385,9 +389,16 @@ def update_temps():
 def update_fourmis():
     """met à jour les stats de la colonie
 
-    PRE: les stats de la colonie et des images
-    POST: modifie dans l'interface l'image,
-          la reine, le nombre de fourmis,d'oeuf et de larves et la quantité de nourriture
+    PRE: les différents type de fourmis et la nourriture dans l'objet Colonie
+    POST: modifie le nombre des différents types de fourmis et la nourriture dans l'objet Colonie.
+          modifie dans l'interface graphique :
+          - la configuration de reine si la reine est egal à 0,
+          - la couleur de la configuration de nourriture si la quantité de nourriture est egal à 0,
+          - l'image qui est affiché selon la configuration de la ligne qui affiche le nombre de fourmis dans la colonie,
+          - la configuration d'oeuf qui affiche sous forme de chaine du nombre d'oeufs dans la colonie,
+          - la configuration de larves qui affiche sous forme de chaine du nombres de larves dans la colonie,
+          - la configuration de fourmis qui affiche sous forme de chaine du nombre de fourmis dans la colonie,
+          - la configuration de nourriture qui affiche sous forme de chaine la quantité de nourriture dans la colonie.
     """
     notre_colonie.jour()
     reine, nb_fourmis, nb_oeufs, nb_larves, nourriture = notre_colonie.stats()
@@ -430,9 +441,15 @@ def vitesse_tres_accelere():
 def evenements_aleatoires():
     """générer un evenement aleatoire
 
-    PRE: une liste des événements possibles
-    POST: renvoie une variable qui contient une chaîne de caractère affichant un évènement aléatoire
-            qui modifie la taille de la colonie ou la quantité de nourriture chaque jour.
+    PRE: la taille de la colonie, une liste des événements possibles, la quantité de nourriture de la colonie, le poids
+    des évènements possible et la liste des différents types de fourmis de l'objet Colonie.
+    POST: si la taille de la colonie de l'objet Colonie est supérieur à 1000, on génère un evenement aleatoire.
+          - si l'évènement génèrer ne fait pas de mort, on renvoie un message qui dit de combien la colonie a augmenté
+          et on modifie la taille de la colonie ou de combien de nourriture bonus a été trouver et on modifie le total
+          de nourriture de l'objet Colonie.
+          - si l'évènement génèrer fais des morts, on renvoie un message qui dit le nombre de fourmis mortes et qui
+          modifie la taille de la colonie de l'objet Colonie.
+          - si le total de nourriture est de 0, on renvoie un message qui indique qu'il n'y a plus de nourriture
     """
     message = "Rien de particulier ne s'est passé hier"
     if notre_colonie.taille_colonie > 1000:
@@ -514,8 +531,10 @@ def evenements_aleatoires():
 def nourriture_rapporter():
     """augmentation de la nourriture
 
-    PRE: la taille et la quantité de nourriture de la colonie
-    POST: modifie la quantité de nourriture chaque jour
+    PRE: la taille de la colonie, la liste des différent types de fourmis de la colonie et la quantité de nourriture de
+         l'objet Colonie.
+    POST: si la taille de la colonie est d'au moins 1 et que son stade est 'adulte',
+          on modifie le quantité de nourriture rapporté chaque jour qui est de 1 ou 2 nourritures par fourmis adulte.
     """
     if notre_colonie.taille_colonie >= 1:
         for fourmi in notre_colonie.liste_des_fourmis:
@@ -526,9 +545,11 @@ def nourriture_rapporter():
 def update_naissance__deces(colonie):
     """met à jour le nombre de naissance et de décès
 
-    PRE: des variables qui comptent les morts et les naissances de la colonie
-    POST: renvoie une variable contenant une chaîne de caractères
-          qui affiche le nombre de naissance et de décès chaque jour.
+    PRE: colonie est un Objet Colonie qui possède les variables naissances et morts.
+    POST: si il y a aucune naissance et aucun décès, un message precis est envoyé
+          - chaque jour, on renvoie un message qui affiche le nombre de naissance et le nombre de mort naturelle dans la
+          colonie.
+          - ce message s'affiche dans la configuration de naissance_morts_de_la_journee dans l'interface.
     """
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
