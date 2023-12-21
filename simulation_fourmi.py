@@ -739,8 +739,8 @@ def ajout_evenement():
     try:
         if not (mort_min.isdigit() and mort_max.isdigit() and poids.isdigit()):
             raise PasNombre("Le nombre de mort et la fréquence doivent être des NOMBRES")
-    except PasNombre:
-        evenement_utilisateur_erreur.config(text=str(PasNombre))
+    except PasNombre as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
         return
     try:
@@ -755,8 +755,8 @@ def ajout_evenement():
         evenement_ajoute.config(text="Votre événement '" + evenement +
                                 "' a été ajouté à la simulation!")
         evenement_ajoute.pack()
-    except TropGrand:
-        evenement_utilisateur_erreur.config(text=str(TropGrand))
+    except TropGrand as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
 
 
