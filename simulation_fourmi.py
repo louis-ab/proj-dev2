@@ -5,11 +5,14 @@ from PIL import Image, ImageTk
 
 CheminsImages = ['./1.jpeg', './2.jpeg', './3.jpeg', './4.jpeg']
 
+
 class PasNombre(Exception):
     """Le nombre de mort et la fréquence doivent être des NOMBRES"""
 
+
 class TropGrand(Exception):
     """Le nombree est trop grand"""
+
 
 class Colonie:
     """Représente une colonie de fourmis, contenant une reine et plusieurs fourmis."""
@@ -40,7 +43,7 @@ class Colonie:
             self.liste_des_fourmis = []
 
         for oeuf in range(oeufs - self.oeufs):
-            self.liste_des_fourmis.append(Fourmi(stade='oeuf'))
+            self.liste_des_fourmis.append(Fourmi())
         for larve in range(larves - self.larves):
             self.liste_des_fourmis.append(Fourmi(stade='larve'))
         for adulte in range(taille_colonie - self.taille_colonie):
@@ -200,7 +203,7 @@ class Reine(Fourmi):
         else:
             oeuf_min = 0
             oeuf_max = 4
-        return [Fourmi('oeuf') for pondu in range(random.randint(oeuf_min, oeuf_max))]
+        return [Fourmi() for pondu in range(random.randint(oeuf_min, oeuf_max))]
 
 
 class Temps:
@@ -228,7 +231,7 @@ class Temps:
         day = self.minutes // 1440
 
         heure = str(hour) + ':' + str(minute)
-        return ('Jour ' + str(day), heure)
+        return 'Jour ' + str(day), heure
 
     def update(self):
         """
@@ -275,7 +278,7 @@ class Sauvegarde:
 
     def __init__(self, path=''):
         if not path.endswith('.json'):
-            path = path + '.json'
+            path += '.json'
         self.path = path
 
     def sauve(self, colonie, temps):
@@ -317,7 +320,7 @@ class Sauvegarde:
         """
         global notre_colonie, temps
         try:
-            with open(self.path, 'r', encoding="utf8") as fichier:
+            with open(self.path, encoding="utf8") as fichier:
                 data = json.loads(fichier.read())
 
                 liste_des_fourmis = []
@@ -349,7 +352,7 @@ class Sauvegarde:
         """
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
-            self.path = self.path + '.json'
+            self.path += '.json'
         self.sauve(notre_colonie, temps)
 
     def charge_interface(self):
@@ -362,15 +365,15 @@ class Sauvegarde:
         """
         self.path = sauvegarde_texte.get("1.0", "end-1c")
         if not self.path.endswith('.json'):
-            self.path = self.path + '.json'
+            self.path += '.json'
         self.charge()
 
 
 def update_temps():
     """met à jour les données de temps
 
-    PRE: le jour et l'heure
-    POST: modifie dans l'interface le jour et l'heure
+    PRE: -
+    POST: modifie le jour et l'heure dans la fonction update() de l'objet Temps
     """
     jour, heure = temps.update()
 
@@ -382,9 +385,8 @@ def update_temps():
 def update_fourmis():
     """met à jour les stats de la colonie
 
-    PRE: les stats de la colonie et des images
-    POST: modifie dans l'interface l'image,
-          la reine, le nombre de fourmis,d'oeuf et de larves et la quantité de nourriture
+    PRE: -
+    POST: modifie le nombre des différents types de fourmis et la nourriture dans la fonction stats() de l'objet Colonie
     """
     notre_colonie.jour()
     reine, nb_fourmis, nb_oeufs, nb_larves, nourriture = notre_colonie.stats()
@@ -410,100 +412,103 @@ def update_fourmis():
 
 
 def vitesse_normale():
+    """vitesse normale de la simulation"""
     temps.vitesse = 1000
 
 
 def vitesse_accelere():
+    """vitesse accélérée de la simulation"""
     temps.vitesse = 100
 
 
 def vitesse_tres_accelere():
+    """vitesse très accélérée de la simulation"""
     temps.vitesse = 10
 
 
 def evenements_aleatoires():
     """générer un evenement aleatoire
 
-    PRE: une liste des événements possibles
-    POST: renvoie une variable qui contient une chaîne de caractère affichant un évènement aléatoire
-            qui modifie la taille de la colonie ou la quantité de nourriture chaque jour.
+    PRE: -
+    POST: si la taille de la colonie de l'objet Colonie est supérieur à 1000, on génère un evenement aleatoire.
+          - si l'évènement génèrer ne fait pas de mort, on renvoie un message qui dit de combien la colonie a augmenté
+          et on modifie la taille de la colonie ou de combien de nourriture bonus a été trouver et on modifie le total
+          de nourriture de l'objet Colonie.
+          - si l'évènement génèrer fais des morts, on renvoie un message qui dit le nombre de fourmis mortes et qui
+          modifie la taille de la colonie de l'objet Colonie.
+          - si le total de nourriture est de 0, on renvoie un message qui indique qu'il n'y a plus de nourriture
+
     """
     message = "Rien de particulier ne s'est passé hier"
     if notre_colonie.taille_colonie > 1000:
         evenement_actuel = \
             random.choices(notre_colonie.liste_evenements_aleatoire,
-                           weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
-        text_evenements = "Rien de particulier ne s'est passé hier"
-        message = text_evenements
-        if notre_colonie.taille_colonie > 1000:
-            evenement_actuel = \
-                random.choices(notre_colonie.liste_evenements_aleatoire,
-                               weights=notre_colonie.poids_evenements_aleatoire, k=1)[0]
-            if evenement_actuel[0] == 'nourriture bonus':
-                min_nourriture = evenement_actuel[1]
-                max_nourriture = evenement_actuel[2]
+                           weights=notre_colonie.poids_evenements_aleatoire)[0]
+        if evenement_actuel[0] == 'nourriture bonus':
+            min_nourriture = evenement_actuel[1]
+            max_nourriture = evenement_actuel[2]
 
-                nbr_de_nourriture = random.randint(min_nourriture, max_nourriture)
-                count_nourriture = 0
-                while count_nourriture < nbr_de_nourriture:
-                    notre_colonie.nourriture += 1
-                    count_nourriture += 1
+            nbr_de_nourriture = random.randint(min_nourriture, max_nourriture)
+            count_nourriture = 0
+            while count_nourriture < nbr_de_nourriture:
+                notre_colonie.nourriture += 1
+                count_nourriture += 1
 
-                if nbr_de_nourriture == 1:
-                    message = "Les fourmis ont trouvé 1 nourriture dans la nature"
-                else:
-                    message = "Les fourmis ont trouvé " + str(nbr_de_nourriture) \
-                              + " nourriture dans la nature"
-            elif evenement_actuel[0] == 'colonie agrandis':
-                min_fourmi = evenement_actuel[1]
-                max_fourmi = evenement_actuel[2]
-
-                nbr_de_fourmi = random.randint(min_fourmi, max_fourmi)
-                count_fourmi = 0
-                while count_fourmi < nbr_de_fourmi:
-                    notre_colonie.taille_colonie += 1
-                    count_fourmi += 1
-
-                if nbr_de_fourmi == 1:
-                    message = "Il y a 1 fourmi qui a rejoint votre colonie"
-                else:
-                    message = "Il y a " + str(nbr_de_fourmi) \
-                              + " fourmis qui ont rejoint votre colonie"
-            elif evenement_actuel[0] == 'rienNeSePasse':
-                pass
-
+            if nbr_de_nourriture == 1:
+                message = "Les fourmis ont trouvé 1 nourriture dans la nature"
             else:
-                min_morts = evenement_actuel[1]
-                max_morts = evenement_actuel[2]
+                message = "Les fourmis ont trouvé " + str(nbr_de_nourriture) \
+                          + " nourriture dans la nature"
+        elif evenement_actuel[0] == 'colonie agrandis':
+            min_fourmi = evenement_actuel[1]
+            max_fourmi = evenement_actuel[2]
 
-                if max_morts > notre_colonie.taille_colonie:
-                    max_morts = notre_colonie.taille_colonie
-                    min_morts = 1
+            nbr_de_fourmi = random.randint(min_fourmi, max_fourmi)
+            count_fourmi = 0
+            while count_fourmi < nbr_de_fourmi:
+                notre_colonie.taille_colonie += 1
+                count_fourmi += 1
 
-                nbr_de_mort = random.randint(min_morts, max_morts)
-                count_morts = 0
-                position_fourmis = 0
-                while count_morts < nbr_de_mort:
-                    if notre_colonie.liste_des_fourmis[position_fourmis].stade == 'adulte':
-                        notre_colonie.liste_des_fourmis[position_fourmis].stade = 'mort'
-                        count_morts += 1
-                    position_fourmis += 1
+            if nbr_de_fourmi == 1:
+                message = "Il y a 1 fourmi qui a rejoint votre colonie"
+            else:
+                message = "Il y a " + str(nbr_de_fourmi) \
+                          + " fourmis qui ont rejoint votre colonie"
+        elif evenement_actuel[0] == 'rienNeSePasse':
+            pass
 
-                if evenement_actuel[0] == 'fourmisPerdu':
-                    if nbr_de_mort == 1:
-                        message = "1 fourmi s'est perdue dans la nature"
-                    else:
-                        message = str(nbr_de_mort) + " fourmis se sont perdues dans la nature"
-                elif evenement_actuel[0] == 'climatique':
-                    message = str(nbr_de_mort) + " fourmis sont morts de raison climatique"
-                elif nbr_de_mort == 0:
-                    message = "Il y a eu une " + evenement_actuel[0] + " qui n'a pas tuée de fourmi"
-                elif nbr_de_mort == 1:
-                    message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                              + str(nbr_de_mort) + " de fourmi"
+        else:
+            min_morts = evenement_actuel[1]
+            max_morts = evenement_actuel[2]
+
+            if max_morts > notre_colonie.taille_colonie:
+                max_morts = notre_colonie.taille_colonie
+                min_morts = 1
+
+            nbr_de_mort = random.randint(min_morts, max_morts)
+            count_morts = 0
+            position_fourmis = 0
+            while count_morts < nbr_de_mort:
+                if notre_colonie.liste_des_fourmis[position_fourmis].stade == 'adulte':
+                    notre_colonie.liste_des_fourmis[position_fourmis].stade = 'mort'
+                    count_morts += 1
+                position_fourmis += 1
+
+            if evenement_actuel[0] == 'fourmisPerdu':
+                if nbr_de_mort == 1:
+                    message = "1 fourmi s'est perdue dans la nature"
                 else:
-                    message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
-                              + str(nbr_de_mort) + " de fourmis"
+                    message = str(nbr_de_mort) + " fourmis se sont perdues dans la nature"
+            elif evenement_actuel[0] == 'climatique':
+                message = str(nbr_de_mort) + " fourmis sont morts de raison climatique"
+            elif nbr_de_mort == 0:
+                message = "Il y a eu une " + evenement_actuel[0] + " qui n'a pas tuée de fourmi"
+            elif nbr_de_mort == 1:
+                message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
+                          + str(nbr_de_mort) + " de fourmi"
+            else:
+                message = "Il y a eu une " + evenement_actuel[0] + " qui a tuée " \
+                          + str(nbr_de_mort) + " de fourmis"
 
         message = "Les événements : \n" + message
         if notre_colonie.nourriture == 0:
@@ -512,10 +517,12 @@ def evenements_aleatoires():
 
 
 def nourriture_rapporter():
-    """augmentation de la nourriture
+    """augmentation de la nourriture de 1 ou 2 par fourmis
 
-    PRE: la taille et la quantité de nourriture de la colonie
-    POST: modifie la quantité de nourriture chaque jour
+    PRE: -
+    POST: si la taille de la colonie de l'objet Colonie est d'au moins 1 et que son stade est 'adulte',
+          on modifie le quantité de nourriture de l'objet Colonie qui est rapporté chaque jour et
+          qui est de 1 ou 2 nourritures par fourmis adulte.
     """
     if notre_colonie.taille_colonie >= 1:
         for fourmi in notre_colonie.liste_des_fourmis:
@@ -526,9 +533,10 @@ def nourriture_rapporter():
 def update_naissance__deces(colonie):
     """met à jour le nombre de naissance et de décès
 
-    PRE: des variables qui comptent les morts et les naissances de la colonie
-    POST: renvoie une variable contenant une chaîne de caractères
-          qui affiche le nombre de naissance et de décès chaque jour.
+    PRE: colonie est un Objet Colonie qui possède les variables naissances et morts.
+    POST: si il n'y a aucune naissance et aucun décès, un message precis est envoyé
+          - renvoie chaque jour un message qui affiche le nombre de naissance et le nombre de mort naturelle dans la
+          colonie.
     """
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
@@ -566,7 +574,7 @@ def demarre():
     update_fourmis()
 
 
-temps = Temps(0)
+temps = Temps()
 sauvegarde = Sauvegarde()
 
 ##########################
@@ -722,6 +730,7 @@ mort_max_utilisateur.pack()
 poid_evenement.pack()
 poids_evenement_utilisateur.pack()
 
+
 def ajout_evenement():
     """Permet d'ajouter un événement aléatoire."""
 
@@ -733,8 +742,8 @@ def ajout_evenement():
     try:
         if not (mort_min.isdigit() and mort_max.isdigit() and poids.isdigit()):
             raise PasNombre("Le nombre de mort et la fréquence doivent être des NOMBRES")
-    except PasNombre:
-        evenement_utilisateur_erreur.config(text=PasNombre)
+    except PasNombre as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
         return
     try:
@@ -749,8 +758,8 @@ def ajout_evenement():
         evenement_ajoute.config(text="Votre événement '" + evenement +
                                 "' a été ajouté à la simulation!")
         evenement_ajoute.pack()
-    except TropGrand:
-        evenement_utilisateur_erreur.config(text=TropGrand)
+    except TropGrand as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
 
 
