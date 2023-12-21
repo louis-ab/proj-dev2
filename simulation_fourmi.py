@@ -237,7 +237,9 @@ class Temps:
         """
         ajoute 1 minute à chaque lancement de la fonction
         PRÉ:-
-        POST: retourne la fonction affiche() avec l’heure et le temps actuel
+        POST: self.affiche() affiche l’heure et le temps actue dans l'interface graphique,
+              augmente self.minutes de 1,
+              updade_fourmis() exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
         """
         self.minutes += 1
         if self.minutes % 1440 == 0:
@@ -248,7 +250,9 @@ class Temps:
         """
         passe 1 jour dans la simulation
         PRÉ:-
-        POST: retourne la fonction affiche() avec l’heure et le temps actuel
+        POST: retourne la fonction affiche() ce qui affiche l'heure et le jour actuel dans l'interface graphique,
+              permet d'avancer la fonction d'1 jour,
+              updade_fourmis() exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
         """
         self.minutes += 1440 - self.minutes % 1440
         update_fourmis()
@@ -257,12 +261,11 @@ class Temps:
     def passer_deux_jours(self):
         """
         passe 2 jours dans la simulation
-        PRÉ:-
-        POST: retourne la fonction affiche() avec l’heure et le temps actuel
+        PRÉ: existance de la self.fonction jour_suivant()
+        POST: exécute la fonction jour_suivant() 2 fois, ce qui permet d'avancer la simulation de 2 jours
         """
-        self.minutes += 2880 - self.minutes % 2880
-        update_fourmis()
-        return self.affichage()
+        self.jour_suivant()
+        self.jour_suivant()
 
     @property
     def vitesse(self):
@@ -569,22 +572,32 @@ def update_naissance__deces(colonie):
 def demarre():
     """
     création de la colonie
-    PRE: nombre entier entré par l'utilisateur dans l'interface graphique
-    POST: création de la colonie et lancement de la simulation
+    PRE: nourriture_texte et fourmi_texte contiennent un nombre entier
+    POST: création de la colonie avec les paramètres entré par l'utilisateur(nombre de fourmis et quantité de nourriture),
+          lancement de la simulation,
+          retire dans l'interface graphique les champs pour entrer la nouriture et le nombre de fourmis initials
+    RAISE: PasNombre si nourriture_debut et fourmi_debut sont pas des nombres
     """
     global notre_colonie, temps
 
     nourriture_debut = nourriture_texte.get("1.0", "end-1c")
     fourmi_debut = fourmi_texte.get("1.0", "end-1c")
 
-    nourriture_titre.destroy()
-    fourmi_titre.destroy()
-    nourriture_texte.destroy()
-    fourmi_texte.destroy()
-    commence_bouton.destroy()
+    try:
+        if not (nourriture_debut.isdigit() and fourmi_debut.isdigit()):
+            raise PasNombre("La quantité de fourmis et de nourriture doivent être des NOMBRES")
 
-    notre_colonie = Colonie(nourriture=int(nourriture_debut), taille_colonie=int(fourmi_debut))
-    update_fourmis()
+        nourriture_titre.destroy()
+        fourmi_titre.destroy()
+        nourriture_texte.destroy()
+        fourmi_texte.destroy()
+        commence_bouton.destroy()
+
+        notre_colonie = Colonie(nourriture=int(nourriture_debut), taille_colonie=int(fourmi_debut))
+        update_fourmis()
+
+    except PasNombre as e:
+        print(e)
 
 
 temps = Temps()
@@ -754,8 +767,8 @@ def ajout_evenement():
     try:
         if not (mort_min.isdigit() and mort_max.isdigit() and poids.isdigit()):
             raise PasNombre("Le nombre de mort et la fréquence doivent être des NOMBRES")
-    except PasNombre:
-        evenement_utilisateur_erreur.config(text=str(PasNombre))
+    except PasNombre as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
         return
     try:
@@ -770,8 +783,8 @@ def ajout_evenement():
         evenement_ajoute.config(text="Votre événement '" + evenement +
                                 "' a été ajouté à la simulation!")
         evenement_ajoute.pack()
-    except TropGrand:
-        evenement_utilisateur_erreur.config(text=str(TropGrand))
+    except TropGrand as e:
+        evenement_utilisateur_erreur.config(text=str(e))
         evenement_utilisateur_erreur.pack()
 
 
