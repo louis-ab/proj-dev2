@@ -375,7 +375,7 @@ class Sauvegarde:
 def update_temps():
     """met à jour les données de temps
 
-    PRE: le jour et l'heure de l'objet Temps
+    PRE: le jour, l'heure et la vitesse de l'objet Temps
     POST: modifie le jour et l'heure.
           modifie dans l'interface graphique :
           - la configuration de l'heure qui affiche l'heure dans la simulation
@@ -392,8 +392,9 @@ def update_temps():
 def update_fourmis():
     """met à jour les stats de la colonie
 
-    PRE: les différents type de fourmis et la nourriture dans l'objet Colonie
-    POST: modifie le nombre des différents types de fourmis et la nourriture dans l'objet Colonie.
+    PRE: les différents type de fourmis et le total de nourriture de l'objet Colonie et des images de la variable
+         CheminsImages.
+    POST: modifie le nombre des différents types de fourmis et le total de nourriture dans l'objet Colonie.
           modifie dans l'interface graphique :
           - la configuration de reine si la reine est egal à 0,
           - la couleur de la configuration de nourriture si la quantité de nourriture est egal à 0,
@@ -444,15 +445,17 @@ def vitesse_tres_accelere():
 def evenements_aleatoires():
     """générer un evenement aleatoire
 
-    PRE: la taille de la colonie, une liste des événements possibles, la quantité de nourriture de la colonie, le poids
-    des évènements possible et la liste des différents types de fourmis de l'objet Colonie.
+    PRE: la taille de la colonie, une liste des événements aléatoire, le poids des évènements aléatoire, le total de
+         nourriture de la colonie et le type de chaque fourmis de la liste des fourmis de l'objet Colonie.
     POST: si la taille de la colonie de l'objet Colonie est supérieur à 1000, on génère un evenement aleatoire.
           - si l'évènement génèrer ne fait pas de mort, on renvoie un message qui dit de combien la colonie a augmenté
           et on modifie la taille de la colonie ou de combien de nourriture bonus a été trouver et on modifie le total
           de nourriture de l'objet Colonie.
           - si l'évènement génèrer fais des morts, on renvoie un message qui dit le nombre de fourmis mortes et qui
           modifie la taille de la colonie de l'objet Colonie.
-          - si le total de nourriture est de 0, on renvoie un message qui indique qu'il n'y a plus de nourriture
+          - si le total de nourriture est de 0, on renvoie un message qui indique qu'il n'y a plus de nourriture.
+          - Chaque jour, on va affichez le message de l'événèment générer aléatoirement dans la configuration
+          de evenements_de_la_journee de l'interface graphique
     """
     message = "Rien de particulier ne s'est passé hier"
     if notre_colonie.taille_colonie > 1000:
@@ -534,7 +537,7 @@ def evenements_aleatoires():
 def nourriture_rapporter():
     """augmentation de la nourriture
 
-    PRE: la taille de la colonie, la liste des différent types de fourmis de la colonie et la quantité de nourriture de
+    PRE: la taille de la colonie, le type de chaque fourmis de la liste des fourmis et la quantité de nourriture de
          l'objet Colonie.
     POST: si la taille de la colonie est d'au moins 1 et que son stade est 'adulte',
           on modifie le quantité de nourriture rapporté chaque jour qui est de 1 ou 2 nourritures par fourmis adulte.
@@ -552,7 +555,7 @@ def update_naissance__deces(colonie):
     POST: si il y a aucune naissance et aucun décès, un message precis est envoyé
           - chaque jour, on renvoie un message qui affiche le nombre de naissance et le nombre de mort naturelle dans la
           colonie.
-          - ce message s'affiche dans la configuration de naissance_morts_de_la_journee dans l'interface.
+          - ce message s'affiche dans la configuration de naissance_morts_de_la_journee dans l'interface graphique.
     """
     text_nul = "Il n'y a eu aucune naissance\n et aucune mort naturelle aujourd'hui"
     nbr_mort = colonie.morts
