@@ -237,9 +237,9 @@ class Temps:
         """
         ajoute 1 minute à chaque lancement de la fonction
         PRÉ:-
-        POST: self.affiche() affiche l’heure et le temps actue dans l'interface graphique,
-              augmente self.minutes de 1,
-              updade_fourmis() exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
+        POST: affiche l’heure et le temps actue dans l'interface graphique,
+              augmente le temps de 1 minute,
+              exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
         """
         self.minutes += 1
         if self.minutes % 1440 == 0:
@@ -250,9 +250,9 @@ class Temps:
         """
         passe 1 jour dans la simulation
         PRÉ:-
-        POST: retourne la fonction affiche() ce qui affiche l'heure et le jour actuel dans l'interface graphique,
-              permet d'avancer la fonction d'1 jour,
-              updade_fourmis() exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
+        POST: affiche l'heure et le jour actuel dans l'interface graphique,
+              permet d'avancer la simulation de 1 jour,
+              exécute la simulation, modifie le nombre de fourmis et de nouriture de la colonie
         """
         self.minutes += 1440 - self.minutes % 1440
         update_fourmis()
@@ -261,8 +261,9 @@ class Temps:
     def passer_deux_jours(self):
         """
         passe 2 jours dans la simulation
-        PRÉ: existance de la fonction self.jour_suivant()
-        POST: exécute la fonction jour_suivant() 2 fois, ce qui permet d'avancer la simulation de 2 jours
+        PRÉ: -
+        POST: permet d'avancer la simulation de 2 jour,
+              exécute la simulation sur 2 jours, modifie le nombre de fourmis et de nouriture de la colonie
         """
         self.jour_suivant()
         self.jour_suivant()
@@ -579,7 +580,6 @@ def demarre():
     POST: création de la colonie avec les paramètres entré par l'utilisateur(nombre de fourmis et quantité de nourriture),
           lancement de la simulation,
           retire dans l'interface graphique les champs pour entrer la nouriture et le nombre de fourmis initials
-    RAISE: PasNombre si nourriture_debut et fourmi_debut sont pas des nombres
     """
     global notre_colonie, temps
 
