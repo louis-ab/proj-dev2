@@ -376,9 +376,9 @@ class Sauvegarde:
 def update_temps():
     """met à jour les données de temps
 
-    PRE: le jour de l'objet Temps qui est un entier retourné sous forme de chaine,
-         l'heure de l'objet Temps qui est un entier retourné sous forme de chaine,
-         et la vitesse de l'objet Temps qui est un entier
+    PRE: temps qui est un Objet de type Temps,
+         heure_ecran qui est un Label de la GUI tkinter,
+         et jour_ecran qui est un Label de la GUI tkinter.
     POST: modifie le jour et l'heure.
           modifie dans l'interface graphique :
           - la configuration de l'heure qui affiche l'heure dans la simulation
@@ -395,9 +395,14 @@ def update_temps():
 def update_fourmis():
     """met à jour les stats de la colonie
 
-    PRE: les différents type de fourmis de l'objet Colonie qui sont des entiers,
-         le total de nourriture de l'objet Colonie qui est un entier,
-         et des images de la variable CheminsImages qui est une liste.
+    PRE: notre_colonie qui est un Objet de type Colonie,
+         reine_ecran qui est un Label de la GUI tkinter,
+         nourriture_ecran qui est un Label de la GUI tkinter,
+         images qui est une liste de chaine de caractères représentant des fichiers images à charger,
+         image_ecran qui est un Label de la GUI tkinter,
+         oeufs_ecran est un Label de la GUI tkinter,
+         larves_ecran est un Label de la GUI tkinter,
+         fourmis_ecran est un Label de la GUI tkinter.
     POST: modifie le nombre des différents types de fourmis et le total de nourriture dans l'objet Colonie.
           modifie dans l'interface graphique :
           - la configuration de reine si la reine est egal à 0,
@@ -449,11 +454,8 @@ def vitesse_tres_accelere():
 def evenements_aleatoires():
     """générer un evenement aleatoire
 
-    PRE: la taille de la colonie de l'objet Colonie qui est un entier,
-         une liste des événements aléatoire de l'objet Colonie qui est une liste,
-         le poids des évènements aléatoire de l'objet Colonie qui est une liste,
-         le total de nourriture de l'objet Colonie qui est un entier
-         et le type de chaque fourmis de la liste des fourmis de l'objet Colonie qui est une liste.
+    PRE: notre_colonie qui est un Objet de type Colonie,
+         et evenements_de_la_journee qui est un Label de la GUI tkinter
     POST: si la taille de la colonie de l'objet Colonie est supérieur à 1000, on génère un evenement aleatoire.
           - si l'évènement génèrer ne fait pas de mort, on renvoie un message qui dit de combien la colonie a augmenté
           et on modifie la taille de la colonie ou de combien de nourriture bonus a été trouver et on modifie le total
@@ -544,9 +546,7 @@ def evenements_aleatoires():
 def nourriture_rapporter():
     """augmentation de la nourriture
 
-    PRE: la taille de la colonie de l'objet Colonie qui est un entier,
-         le type de chaque fourmis de la liste des fourmis de l'objet Colonie qui est une liste
-         et la quantité de nourriture de l'objet Colonie qui est un entier.
+    PRE: notre_colonie qui est un Objet de type Colonie.
     POST: si la taille de la colonie est d'au moins 1 et que son stade est 'adulte',
           on modifie le quantité de nourriture rapporté chaque jour qui est de 1 ou 2 nourritures par fourmis adulte.
     """
@@ -559,7 +559,8 @@ def nourriture_rapporter():
 def update_naissance__deces(colonie):
     """met à jour le nombre de naissance et de décès
 
-    PRE: colonie est un Objet Colonie qui possède les variables naissances et morts qui sont des entiers.
+    PRE: colonie qui est un Objet de type Colonie,
+         et naissance_morts_de_la_journee qui est un Label de la GUI tkinter
     POST: si il y a aucune naissance et aucun décès, un message precis est envoyé
           - chaque jour, on renvoie un message qui affiche le nombre de naissance et le nombre de mort naturelle dans la
           colonie.
